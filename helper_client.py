@@ -74,3 +74,32 @@ def secure_minimum_client(server, public_key, private_key, N):
 
 	for i in range(32):
 		secure_multiplication_client(server, public_key, private_key, N)
+		xor = receive(server)
+		xor = public_key.encrypt(private_key.decrypt(xor) % 2)
+		send(server, xor)
+
+	# Receive Gamma' and L'
+	Gamma_prime = receive(server)
+	L_prime = receive(server)
+
+	# Decrypt L
+	M = []
+	for i in L_prime:
+		M.append(private_key.decrypt(i))
+
+	alpha = 0
+	if 1 in M:
+		alpha = 1
+
+	M_prime = []
+	for g in Gamma_prime:
+		M_prime.append(g * alpha)
+
+	# Send M' and E(alpha)
+	send(server, M_prime)
+	send(server, public_key.encrypt(alpha))
+
+	temp = receive(server)
+
+	for i in temp:
+		print(private_key.decrypt(i), end='')

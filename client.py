@@ -46,6 +46,7 @@ while True:
 	elif '2' in option:
 		send(server, '2')
 		secure_minimum_client(server, public_key, private_key, N)
+		print("Min(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
 	elif '9' in option:
 		send(server, '9')
 		break

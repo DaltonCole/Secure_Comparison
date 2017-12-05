@@ -53,7 +53,9 @@ while True:
 		print("Finished secure multiplication, sending to client for your confirmation...")
 		send(client, u_times_v)
 	elif '2' in option:
-		secure_minimum_server(client, public_key, N)
+		minimum = secure_minimum_server(client, public_key, N)
+		print("Finished secure minimum, sending to client for your confirmation...")
+		send(client, minimum)
 	elif '9' in option:
 		break
 
