@@ -7,16 +7,15 @@ from time import sleep
 
 def receive(socket):
 	buffer_size = pickle.loads(socket.recv(128))
-	print("Size R: {}".format(buffer_size))
-	return pickle.loads(socket.recv(buffer_size))
+	r = socket.recv(buffer_size)
+	return pickle.loads(r)
 
 def send(socket, data):
 	# Send buffer size
 	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	print("Size S: {}".format(getsizeof(pickle.dumps(data))))
-	sleep(0.25)
+	sleep(0.4)
 	socket.send(pickle.dumps(data))
-	sleep(0.25)
+	sleep(0.4)
 
 def bit_decomposition(socket, num, public_key, private_key):
 	num = private_key.decrypt(num)
@@ -44,12 +43,6 @@ def print_menu():
 	return str(input())
 
 def secure_multiplication_client(server, public_key, private_key, N):
-	print("Secure multiplication selected, please enter v: ", end='')
-	v = int(input())
-
-	# Send v to server
-	send(server, v)
-
 	# Recieve a' and b' from server
 	a_prime = receive(server)
 	b_prime = receive(server)
@@ -63,10 +56,6 @@ def secure_multiplication_client(server, public_key, private_key, N):
 
 	# Send E(h) to server
 	send(server, h)
-	print("Sent E(h) to server")
-
-	# Confirmation for convenience of user
-	print("u * v = {}".format(private_key.decrypt(receive(server)) % N))
 
 
 def secure_minimum_client(server, public_key, private_key, N):
@@ -80,6 +69,8 @@ def secure_minimum_client(server, public_key, private_key, N):
 	send(server, bit_decomposition(server, public_key.encrypt(v), public_key, private_key))
 
 	# Decompose 
-	send(server, bit_decomposition(server, receive(server), public_key, private_key))
+	t = receive(server)
+	send(server, bit_decomposition(server, t, public_key, private_key))
 
-	print("F")
+	for i in range(32):
+		secure_multiplication_client(server, public_key, private_key, N)

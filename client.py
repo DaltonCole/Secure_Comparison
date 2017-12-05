@@ -34,7 +34,15 @@ while True:
 
 	if '1' in option:
 		send(server, '1')
+		print("Secure multiplication selected, please enter v: ", end='')
+		# Get user input
+		v = int(input())
+		# Send v to server
+		send(server, v)
 		secure_multiplication_client(server, public_key, private_key, N)
+
+		# Confirmation for convenience of user
+		print("u * v = {}".format(private_key.decrypt(receive(server)) % N))
 	elif '2' in option:
 		send(server, '2')
 		secure_minimum_client(server, public_key, private_key, N)

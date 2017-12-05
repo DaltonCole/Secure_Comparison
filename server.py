@@ -42,7 +42,16 @@ while True:
 	option = receive(client)
 
 	if '1' in option:
-		secure_multiplication_server(client, public_key, N)
+		print("Secure multiplication selected, please enter u: ", end='')
+		# Get u from user
+		u = public_key.encrypt(int(input()))
+		# Recieve v from client
+		v = receive(client)
+		u_times_v = secure_multiplication_server(client, public_key, N, u, v)
+
+		# For Confirmation
+		print("Finished secure multiplication, sending to client for your confirmation...")
+		send(client, u_times_v)
 	elif '2' in option:
 		secure_minimum_server(client, public_key, N)
 	elif '9' in option:

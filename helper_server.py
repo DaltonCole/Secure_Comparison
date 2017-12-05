@@ -7,24 +7,17 @@ from time import sleep
 
 def receive(socket):
 	buffer_size = pickle.loads(socket.recv(128))
-	print("Size R: {}".format(buffer_size))
-	return pickle.loads(socket.recv(buffer_size))
+	r = socket.recv(buffer_size)
+	return pickle.loads(r)
 
 def send(socket, data):
 	# Send buffer size
 	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	print("Size S: {}".format(getsizeof(pickle.dumps(data))))
-	sleep(0.25)
+	sleep(0.4)
 	socket.send(pickle.dumps(data))
-	sleep(0.25)
+	sleep(0.4)
 
-def secure_multiplication_server(client, public_key, N):
-	print("Secure multiplication selected, please enter u: ", end='')
-	u = public_key.encrypt(int(input()))
-
-	# Recieve v from client
-	v = receive(client)
-
+def secure_multiplication_server(client, public_key, N, u, v):
 	# Pick two random numbers
 	ra = randrange(0, N)
 	rb = randrange(0, N)
@@ -43,8 +36,8 @@ def secure_multiplication_server(client, public_key, N):
 	s_prime = s + (v * (N - ra))
 
 	u_times_v = s_prime + (public_key.encrypt(ra * rb) * (N - 1))
-	print("Finished secure multiplication, sending to client for your confirmation...")
-	send(client, u_times_v)
+	
+	return u_times_v
 
 
 def secure_minimum_server(client, public_key, N):
@@ -61,5 +54,6 @@ def secure_minimum_server(client, public_key, N):
 	# Randomly choose functionality F
 	F = choice(['u > v', 'u < v'])
 
-	print(F)
+	for u_i, v_i in zip(v_decomp, u_decomp):
+		u_times_v = secure_multiplication_server(client, public_key, N, u_i, v_i)
 
