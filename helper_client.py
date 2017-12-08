@@ -13,11 +13,11 @@ def receive(socket):
 def send(socket, data):
 	# Send buffer size
 	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	sleep(0.4)
+	sleep(0.1)
 	socket.send(pickle.dumps(data))
-	sleep(0.4)
+	sleep(0.1)
 
-def bit_decomposition(socket, num, public_key, private_key):
+def bit_decomposition(num, public_key, private_key):
 	num = private_key.decrypt(num)
 
 	bits = "{0:b}".format(num)
@@ -31,6 +31,12 @@ def bit_decomposition(socket, num, public_key, private_key):
 		encrypted_bits.append(public_key.encrypt(int(i)))
 
 	return encrypted_bits
+
+def binary_decomposition_client(public_key, num):
+	bd = [int(x) for x in "{0:b}".format(num)]
+	bd = ([0] * (32 - len(bd))) + bd
+
+	return [public_key.encrypt(x) for x in bd]
 
 def print_menu():
 	print("Please choose one of the following options:")
@@ -59,24 +65,8 @@ def secure_multiplication_client(server, public_key, private_key, N):
 
 
 def secure_minimum_client(server, public_key, private_key, N):
-	print("Secure minimum selected, please enter v: ", end='')
-	v = int(input())
-
-	# Send v to server
-	send(server, v)
-
-	# Send v's bits to server
-	send(server, bit_decomposition(server, public_key.encrypt(v), public_key, private_key))
-
-	# Decompose 
-	t = receive(server)
-	send(server, bit_decomposition(server, t, public_key, private_key))
-
 	for i in range(32):
 		secure_multiplication_client(server, public_key, private_key, N)
-		xor = receive(server)
-		xor = public_key.encrypt(private_key.decrypt(xor) % 2)
-		send(server, xor)
 
 	# Receive Gamma' and L'
 	Gamma_prime = receive(server)
@@ -98,8 +88,3 @@ def secure_minimum_client(server, public_key, private_key, N):
 	# Send M' and E(alpha)
 	send(server, M_prime)
 	send(server, public_key.encrypt(alpha))
-
-	temp = receive(server)
-
-	for i in temp:
-		print(private_key.decrypt(i), end='')

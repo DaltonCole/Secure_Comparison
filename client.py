@@ -45,11 +45,15 @@ while True:
 		print("u * v = {}".format(private_key.decrypt(receive(server)) % N))
 	elif '2' in option:
 		send(server, '2')
+		print("Secure minimum selected, please enter v: ", end='')
+		v_decomp = binary_decomposition_client(public_key, int(input()))
+		send(server, v_decomp)
 		secure_minimum_client(server, public_key, private_key, N)
 		print("Min(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
 	elif '9' in option:
 		send(server, '9')
 		break
+	print()
 
 """
 msg = pickle.loads(s.recv(4096))

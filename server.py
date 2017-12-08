@@ -53,7 +53,10 @@ while True:
 		print("Finished secure multiplication, sending to client for your confirmation...")
 		send(client, u_times_v)
 	elif '2' in option:
-		minimum = secure_minimum_server(client, public_key, N)
+		print("Secure minimum selected, please enter u: ", end='')
+		u_decomp = binary_decomposition_server(public_key, int(input()))
+		v_decomp = receive(client)
+		minimum = secure_minimum_server(client, public_key, N, u_decomp, v_decomp)
 		print("Finished secure minimum, sending to client for your confirmation...")
 		send(client, minimum)
 	elif '9' in option:

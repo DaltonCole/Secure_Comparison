@@ -1,7 +1,7 @@
 import socket
 from phe import paillier
 import pickle
-from random import randrange, choice
+from random import randrange, choice, shuffle
 from sys import getsizeof
 from time import sleep
 
@@ -13,9 +13,19 @@ def receive(socket):
 def send(socket, data):
 	# Send buffer size
 	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	sleep(0.4)
+	sleep(0.1)
 	socket.send(pickle.dumps(data))
-	sleep(0.4)
+	sleep(0.1)
+
+def permute(l):
+	other = [x for x in range(0, len(l))]
+	shuffle(other)
+
+	return [l[x] for x in other], other
+
+def un_permute(l, other):
+	return [x for x in other] # TODO: Finish
+
 
 def secure_multiplication_server(client, public_key, N, u, v):
 	# Pick two random numbers
@@ -39,18 +49,13 @@ def secure_multiplication_server(client, public_key, N, u, v):
 
 	return u_times_v
 
+def binary_decomposition_server(public_key, num):
+	bd = [int(x) for x in "{0:b}".format(num)]
+	bd = ([0] * (32 - len(bd))) + bd
 
-def secure_minimum_server(client, public_key, N):
-	print("Secure minimum selected, please enter u: ", end='')
-	u = public_key.encrypt(int(input()))
+	return [public_key.encrypt(x) for x in bd]
 
-	# Recieve v from client
-	v = receive(client)
-	v_decomp = receive(client)
-
-	send(client, u)
-	u_decomp = receive(client)
-
+def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	# Randomly choose functionality F
 	F = choice(['u > v', 'u < v'])
 
@@ -61,7 +66,7 @@ def secure_minimum_server(client, public_key, N):
 	r = []
 
 	# For each bit
-	for u_i, v_i in zip(v_decomp, u_decomp):
+	for u_i, v_i in zip(u_decomp, v_decomp):
 		u_times_v = secure_multiplication_server(client, public_key, N, u_i, v_i)
 
 		r.append(randrange(0, N))
@@ -73,9 +78,7 @@ def secure_minimum_server(client, public_key, N):
 			Gamma.append((u_i - v_i) + public_key.encrypt(r[-1]))
 
 		# XOR
-		G_i = u_i + v_i # Might have to do G_i % 2
-		send(client, G_i) # TODO: XOR
-		G_i = receive(client)
+		G_i = u_i + v_i + (u_times_v * (N - 2))
 
 		H_i = (H_i * randrange(0, N)) + G_i
 
@@ -104,8 +107,6 @@ def secure_minimum_server(client, public_key, N):
 			minimum.append(u_decomp[i] + lambda_i)
 		else:
 			minimum.append(v_decomp[i] + lambda_i)
-
-	send(client, minimum)
 
 	total_minimum = public_key.encrypt(0)
 	for i in range(32):
