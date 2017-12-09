@@ -42,6 +42,7 @@ def print_menu():
 	print("Please choose one of the following options:")
 	print("\t(1) Secure Multiplication")
 	print("\t(2) Secure Minimum")
+	print("\t(3) Secure Squared Euclidean Distance")
 	print("\t(9) QUIT")
 	print()
 	print("Option Number: ", end="")
@@ -88,3 +89,12 @@ def secure_minimum_client(server, public_key, private_key, N):
 	# Send M' and E(alpha)
 	send(server, M_prime)
 	send(server, public_key.encrypt(alpha))
+
+def get_vector_input_client(public_key):
+	print("\nEnter comma delimited vector: ")
+	v = input().split(',')
+	return [public_key.encrypt(int(x)) for x in v]
+
+def secure_squared_euclidean_distance_client(server, public_key, private_key, N, length):
+	for i in range(length):
+		secure_multiplication_client(server, public_key, private_key, N)

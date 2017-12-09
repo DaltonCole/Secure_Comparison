@@ -113,3 +113,20 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 		total_minimum += (minimum[31 - i] * (2 ** i))
 
 	return total_minimum
+
+def get_vector_input_server(public_key):
+	print("\nEnter comma delimited vector: ")
+	v = input().split(',')
+	return [public_key.encrypt(int(x)) for x in v]
+
+def secure_squared_euclidean_distance_server(client, public_key, N, u, v):
+	u_minus_v = [(a - b) for a, b in zip(u, v)]
+
+	squared = [secure_multiplication_server(client, public_key, N, x, x) for x in u_minus_v]
+
+	summed = public_key.encrypt(0)
+
+	for i in squared:
+		summed += i
+
+	return summed

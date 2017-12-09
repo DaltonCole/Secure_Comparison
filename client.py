@@ -50,6 +50,14 @@ while True:
 		send(server, v_decomp)
 		secure_minimum_client(server, public_key, private_key, N)
 		print("Min(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
+	elif '3' in option:
+		send(server, '3')
+		print("Secure squared euclidean distance selected, please enter v: ", end='')
+		v = get_vector_input_client(public_key)
+		send(server, v)
+		secure_squared_euclidean_distance_client(server, public_key, private_key, N, len(v))
+		print("SSED(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
+
 	elif '9' in option:
 		send(server, '9')
 		break

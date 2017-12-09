@@ -59,6 +59,13 @@ while True:
 		minimum = secure_minimum_server(client, public_key, N, u_decomp, v_decomp)
 		print("Finished secure minimum, sending to client for your confirmation...")
 		send(client, minimum)
+	elif '3' in option:
+		print("Secure squared euclidean distance selected, please enter u: ", end='')
+		u = get_vector_input_server(public_key)
+		v = receive(client)
+		ssed = secure_squared_euclidean_distance_server(client, public_key, N, u, v)
+		print("Finished secure squared euclidean distance, sending to client for your confirmation...")
+		send(client, ssed)
 	elif '9' in option:
 		break
 
