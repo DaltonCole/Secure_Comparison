@@ -74,8 +74,8 @@ while True:
 		break
 
 	elif '6' in option:
-		print("Secure Bit-OR selected, please enter o1: ", end='')
-		o1 = public_key.encrypt(int(input()))
+		print("Secure Bit-OR selected, please enter o1 [0,1]: ", end='')
+		o1 = public_key.encrypt(bool(int(input())))
 		o2 = receive(client)
 		bitor = secure_bitor_server(client, public_key, N, o1, o2)
 		print("Finished secure Bit-OR, sending to client for your confirmation...")

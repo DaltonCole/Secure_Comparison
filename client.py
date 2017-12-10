@@ -69,11 +69,11 @@ while True:
 		send(server, '6')
 		print("Secure Bit-OR selected, please enter o2 [0,1]: ", end='')
 		# Get user input
-		o2 = public_key.encrypt(int(input()))
+		o2 = public_key.encrypt(bool(int(input())))
 		# Send o2 to server
 		send(server, o2)
-		secure_bitor_client(server, public_key, private_key, N)
 		print("Sent o2 to server")
+		secure_multiplication_client(server, public_key, private_key, N)
 		print("OR(o1, o2) = {}".format(private_key.decrypt(receive(server)) % N))
 
 	print()

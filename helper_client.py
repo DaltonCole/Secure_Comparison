@@ -65,9 +65,6 @@ def secure_multiplication_client(server, public_key, private_key, N):
 	# Send E(h) to server
 	send(server, h)
 
-def secure_bitor_client(server, public_key, private_key, N):
-	pass
-
 def secure_minimum_client(server, public_key, private_key, N):
 	for i in range(32):
 		secure_multiplication_client(server, public_key, private_key, N)
