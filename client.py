@@ -53,7 +53,8 @@ while True:
 		print("Secure minimum selected, please enter v: ", end='')
 		enc_v = public_key.encrypt(int(input()))
 		send(server, enc_v)
-		secure_minimum_client(server, public_key, private_key, N)
+		secure_bit_decomposition_client(server, private_key)
+		secure_bit_decomposition_client(server, private_key)
 		secure_minimum_client(server, public_key, private_key, N)
 		print("Min(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
 	elif '3' in option:
