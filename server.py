@@ -31,7 +31,7 @@ print("Got a connection!")
 ### Recieve Config Parameters ###
 # Key
 public_key = receive(client)
-print("Got puclic key")
+print("Got public key")
 # Field Size
 N = receive(client)
 print("N: {}".format(N))

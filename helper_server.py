@@ -30,7 +30,7 @@ def un_permute(l, other):
 		a[y] = x
 
 	return a
-
+	
 
 def secure_multiplication_server(client, public_key, N, u, v):
 	# Pick two random numbers
@@ -74,6 +74,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	for u_i, v_i in zip(u_decomp, v_decomp):
 		u_times_v = secure_multiplication_server(client, public_key, N, u_i, v_i)
 
+		# Append random number r^
 		r.append(randrange(0, N))
 		if F == 'u > v':
 			W_i = u_i + (u_times_v * (N - 1))
