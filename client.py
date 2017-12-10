@@ -62,6 +62,23 @@ while True:
 		secure_squared_euclidean_distance_client(server, public_key, private_key, N, len(v))
 		print("SSED(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
 
+	elif '4' in option:
+		send(server, '4')
+		print("Secure bit decomposition selected, please enter x: ", end='')
+		x = int(input())
+		print("Enter a bitlength m (or default to len(x)): ", end='')
+		m = input().strip()
+		m = int(m) if m else (x.bit_length() + 1)
+		enc_x = public_key.encrypt(x)
+
+		send(server, enc_x)
+		send(server, m)
+		secure_bit_decomposition_client(server, private_key)
+		x_decomp = receive(server)
+		print("Received [x] from server.")
+		x_decomp_decrypt = [private_key.decrypt(x_i) for x_i in x_decomp]
+		print("Decrypted; x-decomp:", x_decomp_decrypt)
+
 	elif '9' in option:
 		send(server, '9')
 		break

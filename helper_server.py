@@ -95,7 +95,7 @@ def svr_server(client, public_key, enc_x, x_decomp):
 	return γ
 
 
-def secure_binary_decomp_server(client, public_key, enc_x, bitlength_m):
+def secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m):
 	l_inv2 = invert(2, public_key.n) # mpz_t
 	T = enc_x + 0 # TODO: better way to copy?
 	x_decomp = []
@@ -110,7 +110,7 @@ def secure_binary_decomp_server(client, public_key, enc_x, bitlength_m):
 	if svr_server(client, public_key, enc_x, x_decomp) == 1:
 		return x_decomp
 	else:
-		return secure_binary_decomp_server(client, public_key, enc_x, bitlength_m)
+		return secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m)
 
 
 def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):

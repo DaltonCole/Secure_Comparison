@@ -18,7 +18,7 @@ host = 'localhost'
 
 # Try to make it so socket closes quickly
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-port = int(argv[1])                                           
+port = int(argv[1])
 
 # bind to the port
 serversocket.bind((host, port))
@@ -70,6 +70,16 @@ while True:
 		ssed = secure_squared_euclidean_distance_server(client, public_key, N, u, v)
 		print("Finished secure squared euclidean distance, sending to client for your confirmation...")
 		send(client, ssed)
+
+	elif '4' in option:
+		print("Secure bit decomposition selected.")
+		enc_x = receive(client)
+		m = receive(client)
+		print("Received E(x) and m; running secure bit decomposition.")
+		x_decomp = secure_bit_decomposition_server(server, public_key, enc_x, m)
+		print("Finished secure bit decomposition, sending to client")
+		send(client, x_decomp)
+
 	elif '9' in option:
 		break
 

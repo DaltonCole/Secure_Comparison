@@ -89,7 +89,7 @@ def svr_client(server, private_key):
 	return γ
 
 
-def secure_binary_decomp_client(server, private_key):
+def secure_bit_decomposition_client(server, private_key):
 	bitlength_m = receive(server)
 
 	for i in range(0, bitlength_m):
@@ -98,7 +98,7 @@ def secure_binary_decomp_client(server, private_key):
 	if svr_client(server, private_key) == 1:
 		return
 	else:
-		return secure_binary_decomp_client(server, private_key)
+		return secure_bit_decomposition_client(server, private_key)
 
 
 def secure_minimum_client(server, public_key, private_key, N):
