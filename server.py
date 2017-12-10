@@ -2,8 +2,11 @@ import socket
 from phe import paillier
 from helper_server import *
 import pickle
-from sys import getsizeof
+from sys import getsizeof, argv
 
+if len(argv) != 2:
+	print("Usage: python3 {} (port number)".format(argv[0]))
+	quit()
 
 # create a socket object
 serversocket = socket.socket(
@@ -12,10 +15,14 @@ serversocket = socket.socket(
 # get local machine name
 host = 'localhost'
 
+<<<<<<< HEAD
 port = 9999
 
 # Try to make it so socket closes quickly
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+=======
+port = int(argv[1])                                           
+>>>>>>> master
 
 # bind to the port
 serversocket.bind((host, port))
@@ -31,7 +38,7 @@ print("Got a connection!")
 ### Recieve Config Parameters ###
 # Key
 public_key = receive(client)
-print("Got puclic key")
+print("Got public key")
 # Field Size
 N = receive(client)
 print("N: {}".format(N))

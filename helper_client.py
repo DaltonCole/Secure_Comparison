@@ -79,8 +79,10 @@ def secure_minimum_client(server, public_key, private_key, N):
 		M.append(private_key.decrypt(i))
 
 	alpha = 0
-	if 1 in M:
-		alpha = 1
+	for i in M:
+		if 1 == (i % N):
+			alpha = 1
+			break
 
 	M_prime = []
 	for g in Gamma_prime:
