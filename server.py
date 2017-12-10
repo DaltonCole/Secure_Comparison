@@ -73,6 +73,14 @@ while True:
 	elif '9' in option:
 		break
 
+	elif '6' in option:
+		print("Secure Bit-OR selected, please enter o1: ", end='')
+		o1 = public_key.encrypt(int(input()))
+		o2 = receive(client)
+		bitor = secure_bitor_server(client, public_key, N, o1, o2)
+		print("Finished secure Bit-OR, sending to client for your confirmation...")
+		send(client, bitor)
+
 print("Closing connection")
 client.close()
 serversocket.close()

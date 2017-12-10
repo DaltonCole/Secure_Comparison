@@ -61,6 +61,16 @@ def binary_decomposition_server(public_key, num):
 
 	return [public_key.encrypt(x) for x in bd]
 
+def secure_bitor_server(client, public_key, N, o1, o2):
+	# Since o1 & o2 are bits, o1 * o2 = o1 AND o2
+	o1_AND_o2 = secure_multiplication_server(client, public_key, N, o1, o2)
+	
+	# E(o1 OR o2) = E(o1+o2) * E(o1 AND o2)^(N-1)
+	o1_OR_o2 = (o1+o2) - o1_AND_o2
+
+	return o1_OR_o2
+	
+
 def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	# Randomly choose functionality F
 	F = choice(['u > v', 'u < v'])

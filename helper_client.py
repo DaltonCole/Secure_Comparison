@@ -44,6 +44,7 @@ def print_menu():
 	print("\t(2) Secure Minimum")
 	print("\t(3) Secure Squared Euclidean Distance")
 	print("\t(9) QUIT")
+	print("\t(6) Secure Bit-OR")
 	print()
 	print("Option Number: ", end="")
 
@@ -64,6 +65,8 @@ def secure_multiplication_client(server, public_key, private_key, N):
 	# Send E(h) to server
 	send(server, h)
 
+def secure_bitor_client(server, public_key, private_key, N):
+	pass
 
 def secure_minimum_client(server, public_key, private_key, N):
 	for i in range(32):
