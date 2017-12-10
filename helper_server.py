@@ -24,7 +24,12 @@ def permute(l):
 	return [l[x] for x in other], other
 
 def un_permute(l, other):
-	return [x for x in other] # TODO: Finish
+	a = [0] * len(l)
+
+	for x, y in zip(l, other):
+		a[y] = x
+
+	return a
 
 
 def secure_multiplication_server(client, public_key, N, u, v):
@@ -87,8 +92,8 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 		L.append(W_i + (Phi_i * randrange(0, N)))
 
-	Gamma_prime = Gamma # TODO: Permutate Gamma
-	L_prime = L # TODO: Permute L
+	Gamma_prime, gamma_permute_key = permute(Gamma)
+	L_prime, _ = permute(L)
 
 	send(client, Gamma_prime)
 	send(client, L_prime)
@@ -98,7 +103,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	alpha = receive(client)
 
 	# De-permute M
-	M = M_prime # TODO: Un-Permute
+	M = un_permute(M_prime, gamma_permute_key) 
 
 	minimum = []
 	for i in range(32):
