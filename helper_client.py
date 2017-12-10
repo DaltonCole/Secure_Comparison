@@ -78,8 +78,15 @@ def secure_lsb_client(server, private_key):
 
 
 def svr_client(server, private_key):
-	# TODO: write svr
-	return 1
+	W = receive(server)
+
+	if private_key.decrypt(W) == 0:
+		γ = 1
+	else:
+		γ = 0
+
+	send(server, γ)
+	return γ
 
 
 def secure_binary_decomp_client(server, private_key):

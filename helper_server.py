@@ -80,22 +80,32 @@ def secure_lsb_server(client, public_key, T, i):
 
 
 def svr_server(client, public_key, enc_x, x_decomp):
-	# TODO: write SVR
-	return 1
+	U = 0
+
+	for i in range(0, len(x_decomp)):
+		x_i = x_decomp[i] * (2**i)
+		U += x_i
+
+	V = U - enc_x
+	W = V * public_key.get_random_lt_n()
+
+	send(client, W)
+
+	γ = receive(client)
+	return γ
 
 
 def secure_binary_decomp_server(client, public_key, enc_x, bitlength_m):
 	l_inv2 = invert(2, public_key.n) # mpz_t
 	T = enc_x + 0 # TODO: better way to copy?
 	x_decomp = []
-	Z = None
 
 	send(client, bitlength_m)
 
 	for i in range(0, bitlength_m):
 		x_decomp.append(secure_lsb_server(T, i))
 		Z = T - x_decomp[i]
-		T = Z * l_inv2 # Z^l % n^2
+		T = Z * l_inv2
 
 	if svr_server(client, public_key, enc_x, x_decomp) == 1:
 		return x_decomp
