@@ -25,6 +25,7 @@ server.connect((host, port))
 ### Send Config Paramaters ###
 # Send Public Key
 public_key, private_key = paillier.generate_paillier_keypair()#n_length=33)
+public_key.max_int = public_key.n - 1
 send(server, public_key)
 # Send Field Size
 N = 3000000019 # 3 billion
