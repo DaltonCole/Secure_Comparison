@@ -65,6 +65,35 @@ def secure_multiplication_client(server, public_key, private_key, N):
 	send(server, h)
 
 
+def secure_lsb_client(server, private_key):
+	Y = receive(server)
+	y = private_key.decrypt(Y)
+
+	if not y % 2: # y is even
+		alpha = 0
+	else:
+		alpha = 1
+
+	send(server, private_key.public_key.encrypt(alpha))
+
+
+def svr_client(server, private_key):
+	# TODO: write svr
+	return 1
+
+
+def secure_binary_decomp_client(server, private_key):
+	bitlength_m = receive(server)
+
+	for i in range(0, bitlength_m):
+		secure_lsb_client(server, private_key)
+
+	if svr_client(server, private_key) == 1:
+		return
+	else:
+		return secure_binary_decomp_client(server, private_key)
+
+
 def secure_minimum_client(server, public_key, private_key, N):
 	for i in range(32):
 		secure_multiplication_client(server, public_key, private_key, N)

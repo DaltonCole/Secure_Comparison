@@ -1,5 +1,6 @@
 import socket
 from phe import paillier
+from phe.util import invert
 import pickle
 from random import randrange, choice, shuffle
 from sys import getsizeof
@@ -30,7 +31,7 @@ def un_permute(l, other):
 		a[y] = x
 
 	return a
-	
+
 
 def secure_multiplication_server(client, public_key, N, u, v):
 	# Pick two random numbers
@@ -55,11 +56,52 @@ def secure_multiplication_server(client, public_key, N, u, v):
 
 	return u_times_v
 
+
 def binary_decomposition_server(public_key, num):
 	bd = [int(x) for x in "{0:b}".format(num)]
 	bd = ([0] * (32 - len(bd))) + bd
 
 	return [public_key.encrypt(x) for x in bd]
+
+
+def secure_lsb_server(client, public_key, T, i):
+	"""Based on Encrypted_LSB from Samanthula & Jiang."""
+	r = public_key.get_random_lt_n()
+	Y = T + r
+
+	send(client, Y)
+
+	alpha = receive(client)
+
+	if not r % 2: # r is even
+		return alpha
+	else:
+		return (1 - alpha)
+
+
+def svr_server(client, public_key, enc_x, x_decomp):
+	# TODO: write SVR
+	return 1
+
+
+def secure_binary_decomp_server(client, public_key, enc_x, bitlength_m):
+	l_inv2 = invert(2, public_key.n) # mpz_t
+	T = enc_x + 0 # TODO: better way to copy?
+	x_decomp = []
+	Z = None
+
+	send(client, bitlength_m)
+
+	for i in range(0, bitlength_m):
+		x_decomp.append(secure_lsb_server(T, i))
+		Z = T - x_decomp[i]
+		T = Z * l_inv2 # Z^l % n^2
+
+	if svr_server(client, public_key, enc_x, x_decomp) == 1:
+		return x_decomp
+	else:
+		return secure_binary_decomp_server(client, public_key, enc_x, bitlength_m)
+
 
 def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	# Randomly choose functionality F
@@ -104,7 +146,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	alpha = receive(client)
 
 	# De-permute M
-	M = un_permute(M_prime, gamma_permute_key) 
+	M = un_permute(M_prime, gamma_permute_key)
 
 	minimum = []
 	for i in range(32):
