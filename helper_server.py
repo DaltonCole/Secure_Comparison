@@ -1,6 +1,6 @@
 import socket
 from phe import paillier
-from phe.util import invert
+from phe.util import invert, powmod
 import pickle
 from random import randrange, choice, shuffle
 from sys import getsizeof
@@ -96,14 +96,14 @@ def svr_server(client, public_key, enc_x, x_decomp):
 
 
 def secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m):
-	l_inv2 = invert(2, public_key.n) # mpz_t
-	T = enc_x + 0 # TODO: better way to copy?
+	l_inv2 = paillier.EncodedNumber.encode(public_key, invert(2, public_key.n))
+	T = enc_x + 0
 	x_decomp = []
 
 	send(client, bitlength_m)
 
 	for i in range(0, bitlength_m):
-		x_decomp.append(secure_lsb_server(T, i))
+		x_decomp.append(secure_lsb_server(client, public_key, T, i))
 		Z = T - x_decomp[i]
 		T = Z * l_inv2
 

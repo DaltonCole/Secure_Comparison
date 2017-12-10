@@ -76,7 +76,7 @@ while True:
 		enc_x = receive(client)
 		m = receive(client)
 		print("Received E(x) and m; running secure bit decomposition.")
-		x_decomp = secure_bit_decomposition_server(server, public_key, enc_x, m)
+		x_decomp = secure_bit_decomposition_server(client, public_key, enc_x, m)
 		print("Finished secure bit decomposition, sending to client")
 		send(client, x_decomp)
 

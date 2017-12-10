@@ -43,6 +43,7 @@ def print_menu():
 	print("\t(1) Secure Multiplication")
 	print("\t(2) Secure Minimum")
 	print("\t(3) Secure Squared Euclidean Distance")
+	print("\t(4) Secure Bit Decomposition")
 	print("\t(9) QUIT")
 	print()
 	print("Option Number: ", end="")
