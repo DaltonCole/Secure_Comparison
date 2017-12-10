@@ -8,15 +8,15 @@ import time
 
 ### Initalize Connection Process ###
 # create a socket object
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # get local machine name
-host = socket.gethostname()                           
+host = 'localhost'
 
 port = 9999
 
 # connection to hostname on the port.
-server.connect((host, port))  
+server.connect((host, port))
 #####################################
 
 ### Send Config Paramaters ###
@@ -39,6 +39,7 @@ while True:
 		v = int(input())
 		# Send v to server
 		send(server, v)
+		print("Sent v to server")
 		secure_multiplication_client(server, public_key, private_key, N)
 
 		# Confirmation for convenience of user
@@ -66,6 +67,6 @@ while True:
 """
 msg = pickle.loads(s.recv(4096))
 print(private_key.decrypt(msg))
-"""                             
+"""
 
 server.close()

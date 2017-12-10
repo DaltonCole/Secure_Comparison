@@ -35,6 +35,7 @@ def secure_multiplication_server(client, public_key, N, u, v):
 	a_prime = u + public_key.encrypt(ra)
 	b_prime = v + public_key.encrypt(rb)
 
+
 	# Send a' and b' to client
 	send(client, a_prime)
 	send(client, b_prime)
@@ -42,10 +43,10 @@ def secure_multiplication_server(client, public_key, N, u, v):
 	# Recieve E(h) from client
 	h_prime = receive(client)
 
-	s = h_prime + (u * (N - rb))
-	s_prime = s + (v * (N - ra))
+	s = h_prime - (u * rb)
+	s_prime = s - (v * ra)
 
-	u_times_v = s_prime + (public_key.encrypt(ra * rb) * (N - 1))
+	u_times_v = s_prime - public_key.encrypt(ra * rb)
 
 	return u_times_v
 
@@ -71,18 +72,18 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 		r.append(randrange(0, N))
 		if F == 'u > v':
-			W_i = u_i + (u_times_v * (N - 1))
+			W_i = u_i - u_times_v
 			Gamma.append((v_i - u_i) + public_key.encrypt(r[-1]))
 		else:
-			W_i = v_i + (u_times_v * (N - 1))
+			W_i = v_i -u_times_v
 			Gamma.append((u_i - v_i) + public_key.encrypt(r[-1]))
 
 		# XOR
-		G_i = u_i + v_i + (u_times_v * (N - 2))
+		G_i = u_i + v_i + - 2 * u_times_v
 
 		H_i = (H_i * randrange(0, N)) + G_i
 
-		Phi_i = public_key.encrypt(-1) + H_i
+		Phi_i = H_i - 1
 
 		L.append(W_i + (Phi_i * randrange(0, N)))
 
