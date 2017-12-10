@@ -51,8 +51,9 @@ while True:
 	elif '2' in option:
 		send(server, '2')
 		print("Secure minimum selected, please enter v: ", end='')
-		v_decomp = binary_decomposition_client(public_key, int(input()))
-		send(server, v_decomp)
+		enc_v = public_key.encrypt(int(input()))
+		send(server, enc_v)
+		secure_minimum_client(server, public_key, private_key, N)
 		secure_minimum_client(server, public_key, private_key, N)
 		print("Min(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
 	elif '3' in option:
