@@ -2,9 +2,12 @@ import socket
 from phe import paillier
 import pickle
 from helper_client import *
-from sys import getsizeof
+from sys import getsizeof, argv
 import time
 
+if len(argv) != 2:
+	print("Usage: python3 {} (port number)".format(argv[0]))
+	quit()
 
 ### Initalize Connection Process ###
 # create a socket object
@@ -13,7 +16,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # get local machine name
 host = socket.gethostname()                           
 
-port = 9999
+port = int(argv[1])
 
 # connection to hostname on the port.
 server.connect((host, port))  
