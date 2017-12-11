@@ -1,28 +1,17 @@
-import socket
-from phe import paillier
-from phe.util import invert, powmod
-import pickle
 from random import randrange, choice, shuffle
-from sys import getsizeof
-from time import sleep
+from phe import paillier
+from phe.util import invert
 
-def receive(socket):
-	buffer_size = pickle.loads(socket.recv(128))
-	r = socket.recv(buffer_size)
-	return pickle.loads(r)
+from helper_helper import send, receive, get_vector_input
 
-def send(socket, data):
-	# Send buffer size
-	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	sleep(0.1)
-	socket.send(pickle.dumps(data))
-	sleep(0.1)
+get_vector_input_server = get_vector_input
 
 def permute(l):
 	other = [x for x in range(0, len(l))]
 	shuffle(other)
 
 	return [l[x] for x in other], other
+
 
 def un_permute(l, other):
 	a = [0] * len(l)
@@ -173,10 +162,6 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 	return total_minimum
 
-def get_vector_input_server(public_key):
-	print("\nEnter comma delimited vector: ")
-	v = input().split(',')
-	return [public_key.encrypt(int(x)) for x in v]
 
 def secure_squared_euclidean_distance_server(client, public_key, N, u, v):
 	u_minus_v = [(a - b) for a, b in zip(u, v)]

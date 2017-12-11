@@ -1,21 +1,7 @@
-import socket
-from phe import paillier
-import pickle
-from random import randrange
-from sys import getsizeof
-from time import sleep
 
-def receive(socket):
-	buffer_size = pickle.loads(socket.recv(128))
-	r = socket.recv(buffer_size)
-	return pickle.loads(r)
+from helper_helper import send, receive, get_vector_input
 
-def send(socket, data):
-	# Send buffer size
-	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	sleep(0.1)
-	socket.send(pickle.dumps(data))
-	sleep(0.1)
+get_vector_input_client = get_vector_input
 
 def bit_decomposition(num, public_key, private_key):
 	num = private_key.decrypt(num)
@@ -129,10 +115,6 @@ def secure_minimum_client(server, public_key, private_key, N):
 	send(server, M_prime)
 	send(server, public_key.encrypt(alpha))
 
-def get_vector_input_client(public_key):
-	print("\nEnter comma delimited vector: ")
-	v = input().split(',')
-	return [public_key.encrypt(int(x)) for x in v]
 
 def secure_squared_euclidean_distance_client(server, public_key, private_key, N, length):
 	for i in range(length):
