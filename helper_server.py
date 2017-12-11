@@ -1,27 +1,15 @@
-import socket
-from phe import paillier
-import pickle
 from random import randrange, choice, shuffle
-from sys import getsizeof
-from time import sleep
 
-def receive(socket):
-	buffer_size = pickle.loads(socket.recv(128))
-	r = socket.recv(buffer_size)
-	return pickle.loads(r)
+from helper_helper import send, receive, get_vector_input
 
-def send(socket, data):
-	# Send buffer size
-	socket.send(pickle.dumps(getsizeof(pickle.dumps(data))))
-	sleep(0.1)
-	socket.send(pickle.dumps(data))
-	sleep(0.1)
+get_vector_input_server = get_vector_input
 
 def permute(l):
 	other = [x for x in range(0, len(l))]
 	shuffle(other)
 
 	return [l[x] for x in other], other
+
 
 def un_permute(l, other):
 	a = [0] * len(l)
@@ -30,7 +18,7 @@ def un_permute(l, other):
 		a[y] = x
 
 	return a
-	
+
 
 def secure_multiplication_server(client, public_key, N, u, v):
 	# Pick two random numbers
@@ -55,11 +43,13 @@ def secure_multiplication_server(client, public_key, N, u, v):
 
 	return u_times_v
 
+
 def binary_decomposition_server(public_key, num):
 	bd = [int(x) for x in "{0:b}".format(num)]
 	bd = ([0] * (32 - len(bd))) + bd
 
 	return [public_key.encrypt(x) for x in bd]
+
 
 def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	# Randomly choose functionality F
@@ -104,7 +94,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	alpha = receive(client)
 
 	# De-permute M
-	M = un_permute(M_prime, gamma_permute_key) 
+	M = un_permute(M_prime, gamma_permute_key)
 
 	minimum = []
 	for i in range(32):
@@ -121,10 +111,6 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 	return total_minimum
 
-def get_vector_input_server(public_key):
-	print("\nEnter comma delimited vector: ")
-	v = input().split(',')
-	return [public_key.encrypt(int(x)) for x in v]
 
 def secure_squared_euclidean_distance_server(client, public_key, N, u, v):
 	u_minus_v = [(a - b) for a, b in zip(u, v)]
