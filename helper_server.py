@@ -157,8 +157,8 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 			minimum.append(v_decomp[i] + lambda_i)
 
 	total_minimum = public_key.encrypt(0)
-	for i in range(32):
-		total_minimum += (minimum[31 - i] * (2 ** i))
+	for i in range(len(minimum)):
+		total_minimum += (minimum[i] * (2 ** i))
 
 	return total_minimum
 
