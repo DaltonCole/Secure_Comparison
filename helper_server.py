@@ -24,11 +24,12 @@ def un_permute(l, other):
 
 def secure_multiplication_server(client, public_key, N, u, v):
 	# Pick two random numbers
-	ra = randrange(0, N)
-	rb = randrange(0, N)
+	ra = randrange(0, public_key.n // 2)
+	rb = randrange(0, public_key.n // 2)
+	rarb = (ra * rb) % public_key.n
 
-	a_prime = u + public_key.encrypt(ra)
-	b_prime = v + public_key.encrypt(rb)
+	a_prime = u + ra
+	b_prime = v + rb
 
 
 	# Send a' and b' to client
@@ -41,7 +42,7 @@ def secure_multiplication_server(client, public_key, N, u, v):
 	s = h_prime - (u * rb)
 	s_prime = s - (v * ra)
 
-	u_times_v = s_prime - public_key.encrypt(ra * rb)
+	u_times_v = s_prime - rarb
 
 	return u_times_v
 
@@ -117,7 +118,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 		u_times_v = secure_multiplication_server(client, public_key, N, u_i, v_i)
 
 		# Append random number r^
-		r.append(randrange(0, N))
+		r.append(public_key.get_random_lt_n())
 		if F == 'u > v':
 			W_i = u_i - u_times_v
 			Gamma.append((v_i - u_i) + public_key.encrypt(r[-1]))
@@ -128,11 +129,11 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 		# XOR
 		G_i = u_i + v_i + - 2 * u_times_v
 
-		H_i = (H_i * randrange(0, N)) + G_i
+		H_i = (H_i * public_key.get_random_lt_n()) + G_i
 
 		Phi_i = H_i - 1
 
-		L.append(W_i + (Phi_i * randrange(0, N)))
+		L.append(W_i + (Phi_i * public_key.get_random_lt_n()))
 
 	Gamma_prime, gamma_permute_key = permute(Gamma)
 	L_prime, _ = permute(L)
@@ -149,7 +150,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 	minimum = []
 	for i in range(32):
-		lambda_i = M[i] + (alpha * (N - r[i]))
+		lambda_i = M[i] + (alpha * (public_key.n - r[i]))
 
 		if F == 'u > v':
 			minimum.append(u_decomp[i] + lambda_i)

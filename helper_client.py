@@ -46,7 +46,7 @@ def secure_multiplication_client(server, public_key, private_key, N):
 	hb = private_key.decrypt(b_prime)
 
 	# Multiply
-	h = (ha * hb) % N
+	h = (ha * hb) % public_key.n
 
 	# Send E(h) to server
 	send(server, h)
@@ -103,7 +103,7 @@ def secure_minimum_client(server, public_key, private_key, N):
 
 	alpha = 0
 	for i in M:
-		if 1 == (i % N):
+		if 1 == (i % public_key.n):
 			alpha = 1
 			break
 

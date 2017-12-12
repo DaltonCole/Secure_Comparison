@@ -5,7 +5,11 @@ def receive(sock):
     rawsize = sock.recv(128)
     size = int.from_bytes(rawsize, 'big')
     r = sock.recv(size)
-    return pickle.loads(r)
+    try:
+        return pickle.loads(r)
+    except Exception as err:
+        print("###\n size = {}\n r = {}\n###".format(size, r))
+        raise
 
 def send(sock, data):
     pdata = pickle.dumps(data)
