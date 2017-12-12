@@ -83,7 +83,7 @@ while True:
 		print("Decrypted; x-decomp:", x_decomp_decrypt)
 
 	elif '5' in option:
-		send(server, '6')
+		send(server, '5')
 		print("Secure Bit-OR selected, please enter o2 [0,1]: ", end='')
 		# Get user input
 		o2 = public_key.encrypt(bool(int(input())))

@@ -81,7 +81,7 @@ while True:
 		x_decomp = secure_bit_decomposition_server(client, public_key, enc_x, m)
 		print("Finished secure bit decomposition, sending to client")
 		send(client, x_decomp)
-		
+
 	elif '5' in option:
 		print("Secure Bit-OR selected, please enter o1 [0,1]: ", end='')
 		o1 = public_key.encrypt(bool(int(input())))
@@ -89,6 +89,7 @@ while True:
 		bitor = secure_bitor_server(client, public_key, N, o1, o2)
 		print("Finished secure Bit-OR, sending to client for your confirmation...")
 		send(client, bitor)
+		
 	elif '9' in option:
 		break
 
