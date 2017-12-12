@@ -60,8 +60,9 @@ while True:
 		u_decomp = secure_bit_decomposition_server(client, public_key, enc_u, 32)
 		v_decomp = secure_bit_decomposition_server(client, public_key, enc_v, 32)
 		minimum = secure_minimum_server(client, public_key, u_decomp, v_decomp)
+		min_recomp = recompose(public_key, minimum)
 		print("Finished secure minimum, sending to client for your confirmation...")
-		send(client, minimum)
+		send(client, min_recomp)
 	elif '3' in option:
 		print("Secure squared euclidean distance selected, please enter u: ", end='')
 		u = get_vector_input_server(public_key)
@@ -86,6 +87,14 @@ while True:
 		bitor = secure_bitor_server(client, public_key, o1, o2)
 		print("Finished secure Bit-OR, sending to client for your confirmation...")
 		send(client, bitor)
+
+	elif '6' in option:
+		print("Secure minimum-of-n selected.")
+		enc_d = receive(client)
+		d_min = secure_minimum_of_n_server(client, public_key, enc_d)
+		d_min_recomp = recompose(public_key, d_min)
+		print("Finished secure minimum-of-n, sending to client...")
+		send(client, d_min_recomp)
 
 	elif '9' in option:
 		break

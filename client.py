@@ -90,6 +90,20 @@ while True:
 		secure_multiplication_client(server, public_key, private_key)
 		print("OR(o1, o2) = {}".format(private_key.decrypt(receive(server))))
 
+	elif '6' in option:
+		print("Secure minimum-of-n selected, please enter some numbers: ", end='')
+		d = tuple(map(int, input().split()))
+		if len(d) < 2 and 'y' not in input("Too few inputs, 'y' to override: "):
+			continue
+		send(server, '6')
+
+		enc_d = tuple(map(public_key.encrypt, d))
+		send(server, enc_d)
+		print("Sent [d] to server.")
+		secure_minimum_of_n_client(server, private_key)
+		dmin = receive(server)
+		print("min(d) = {}".format(private_key.decrypt(dmin)))
+
 	elif '9' in option:
 		send(server, '9')
 		break

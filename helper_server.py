@@ -1,6 +1,7 @@
 from random import randrange, choice, shuffle
 from phe import paillier
 from phe.util import invert
+import math
 
 from helper_helper import send, receive, get_vector_input
 
@@ -110,6 +111,46 @@ def secure_bitor_server(client, public_key, o1, o2):
 
 	return o1_OR_o2
 
+
+def recompose(public_key, enc_xs):
+    l = len(enc_xs) - 1
+    total = public_key.encrypt(0)
+    for i,x in enumerate(enc_xs):
+        total += x * (2 ** (l - i))
+    return total
+
+
+def secure_minimum_of_n_server(client, public_key, d, bitlength = 32):
+	num = n = len(d)
+	outer = math.ceil(math.log2(n))
+
+	send(client, n)
+
+	d_prime = [
+		secure_bit_decomposition_server(client, public_key, di, bitlength)
+		for di in d]
+
+	for i in range(1, outer + 1):
+		inner = num // 2
+		for j in range(1, inner + 1):
+			# set L,R as defined in Samanthula,Jiang
+			if i == 1:
+				L, R = 2*j-1, 2*j
+			else:
+				L, R = 2*i*(j-1)+1, 2*i*j-1
+			# adjust L,R for indexing
+			L,R = L-1,R-1
+
+			lhs = d_prime[L]
+			rhs = d_prime[R]
+			d_prime[L] = secure_minimum_server(client, public_key, lhs, rhs)
+			d_prime[R] = None
+
+		num = math.ceil(num / 2)
+
+	return d_prime[0]
+
+
 def secure_minimum_server(client, public_key, u_decomp, v_decomp):
 	# Randomly choose functionality F
 	F = choice(['u > v', 'u < v'])
@@ -164,11 +205,7 @@ def secure_minimum_server(client, public_key, u_decomp, v_decomp):
 		else:
 			minimum.append(v_decomp[i] + lambda_i)
 
-	total_minimum = public_key.encrypt(0)
-	for i in range(len(minimum)):
-		total_minimum += (minimum[31-i] * (2 ** i))
-
-	return total_minimum
+	return minimum
 
 
 def secure_squared_euclidean_distance_server(client, public_key, u, v):

@@ -31,11 +31,13 @@ def print_menu():
 	print("\t(3) Secure Squared Euclidean Distance")
 	print("\t(4) Secure Bit Decomposition")
 	print("\t(5) Secure Bit-OR")
+	print("\t(6) Secure Minimum-of-n")
 	print("\t(9) QUIT")
 	print()
 	print("Option Number: ", end="")
 
 	return str(input())
+
 
 def secure_multiplication_client(server, public_key, private_key):
 	# Recieve a' and b' from server
@@ -86,6 +88,14 @@ def secure_bit_decomposition_client(server, private_key):
 		return
 	else:
 		return secure_bit_decomposition_client(server, private_key)
+
+
+def secure_minimum_of_n_client(server, private_key):
+	n = receive(server)
+	for _ in range(n):
+		secure_bit_decomposition_client(server, private_key)
+	for _ in range(n - 1):
+		secure_minimum_client(server, private_key.public_key, private_key)
 
 
 def secure_minimum_client(server, public_key, private_key):
