@@ -98,7 +98,7 @@ def secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m):
 		T = Z * l_inv2
 
 	if svr_server(client, public_key, enc_x, x_decomp) == 1:
-		return x_decomp
+		return list(reversed(x_decomp))
 	else:
 		return secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m)
 
@@ -159,7 +159,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 	total_minimum = public_key.encrypt(0)
 	for i in range(len(minimum)):
-		total_minimum += (minimum[i] * (2 ** i))
+		total_minimum += (minimum[31-i] * (2 ** i))
 
 	return total_minimum
 
