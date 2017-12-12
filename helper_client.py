@@ -30,6 +30,7 @@ def print_menu():
 	print("\t(2) Secure Minimum")
 	print("\t(3) Secure Squared Euclidean Distance")
 	print("\t(4) Secure Bit Decomposition")
+	print("\t(5) Secure Bit-OR")
 	print("\t(9) QUIT")
 	print()
 	print("Option Number: ", end="")
@@ -50,7 +51,6 @@ def secure_multiplication_client(server, public_key, private_key, N):
 
 	# Send E(h) to server
 	send(server, h)
-
 
 def secure_lsb_client(server, private_key):
 	Y = receive(server)

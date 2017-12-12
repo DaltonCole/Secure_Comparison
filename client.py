@@ -82,6 +82,17 @@ while True:
 		x_decomp_decrypt = [private_key.decrypt(x_i) for x_i in x_decomp]
 		print("Decrypted; x-decomp:", x_decomp_decrypt)
 
+	elif '5' in option:
+		send(server, '6')
+		print("Secure Bit-OR selected, please enter o2 [0,1]: ", end='')
+		# Get user input
+		o2 = public_key.encrypt(bool(int(input())))
+		# Send o2 to server
+		send(server, o2)
+		print("Sent o2 to server")
+		secure_multiplication_client(server, public_key, private_key, N)
+		print("OR(o1, o2) = {}".format(private_key.decrypt(receive(server)) % N))
+	
 	elif '9' in option:
 		send(server, '9')
 		break
