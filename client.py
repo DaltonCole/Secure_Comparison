@@ -40,7 +40,7 @@ while True:
 		send(server, '1')
 		print("Secure multiplication selected, please enter v: ", end='')
 		# Get user input
-		v = int(input())
+		v = public_key.encrypt(int(input()))
 		# Send v to server
 		send(server, v)
 		print("Sent v to server")
