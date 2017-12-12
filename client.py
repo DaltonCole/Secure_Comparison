@@ -27,9 +27,6 @@ server.connect((host, port))
 public_key, private_key = paillier.generate_paillier_keypair()#n_length=33)
 public_key.max_int = public_key.n - 1
 send(server, public_key)
-# Send Field Size
-N = 3000000019 # 3 billion
-send(server, N)
 ##############################
 
 ### Start Menu ###
@@ -44,10 +41,10 @@ while True:
 		# Send v to server
 		send(server, v)
 		print("Sent v to server")
-		secure_multiplication_client(server, public_key, private_key, N)
+		secure_multiplication_client(server, public_key, private_key)
 
 		# Confirmation for convenience of user
-		print("u * v = {}".format(private_key.decrypt(receive(server)) % N))
+		print("u * v = {}".format(private_key.decrypt(receive(server))))
 	elif '2' in option:
 		send(server, '2')
 		print("Secure minimum selected, please enter v: ", end='')
@@ -55,15 +52,15 @@ while True:
 		send(server, enc_v)
 		secure_bit_decomposition_client(server, private_key)
 		secure_bit_decomposition_client(server, private_key)
-		secure_minimum_client(server, public_key, private_key, N)
-		print("Min(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
+		secure_minimum_client(server, public_key, private_key)
+		print("Min(u, v) = {}".format(private_key.decrypt(receive(server))))
 	elif '3' in option:
 		send(server, '3')
 		print("Secure squared euclidean distance selected, please enter v: ", end='')
 		v = get_vector_input_client(public_key)
 		send(server, v)
-		secure_squared_euclidean_distance_client(server, public_key, private_key, N, len(v))
-		print("SSED(u, v) = {}".format(private_key.decrypt(receive(server)) % N))
+		secure_squared_euclidean_distance_client(server, public_key, private_key, len(v))
+		print("SSED(u, v) = {}".format(private_key.decrypt(receive(server))))
 
 	elif '4' in option:
 		send(server, '4')
@@ -90,9 +87,9 @@ while True:
 		# Send o2 to server
 		send(server, o2)
 		print("Sent o2 to server")
-		secure_multiplication_client(server, public_key, private_key, N)
-		print("OR(o1, o2) = {}".format(private_key.decrypt(receive(server)) % N))
-	
+		secure_multiplication_client(server, public_key, private_key)
+		print("OR(o1, o2) = {}".format(private_key.decrypt(receive(server))))
+
 	elif '9' in option:
 		send(server, '9')
 		break

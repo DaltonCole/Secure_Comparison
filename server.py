@@ -35,9 +35,6 @@ print("Got a connection!")
 # Key
 public_key = receive(client)
 print("Got public key")
-# Field Size
-N = receive(client)
-print("N: {}".format(N))
 ##########################
 
 while True:
@@ -51,7 +48,7 @@ while True:
 		# Recieve v from client
 		v = receive(client)
 		print("received V")
-		u_times_v = secure_multiplication_server(client, public_key, N, u, v)
+		u_times_v = secure_multiplication_server(client, public_key, u, v)
 
 		# For Confirmation
 		print("Finished secure multiplication, sending to client for your confirmation...")
@@ -62,14 +59,14 @@ while True:
 		enc_v = receive(client)
 		u_decomp = secure_bit_decomposition_server(client, public_key, enc_u, 32)
 		v_decomp = secure_bit_decomposition_server(client, public_key, enc_v, 32)
-		minimum = secure_minimum_server(client, public_key, N, u_decomp, v_decomp)
+		minimum = secure_minimum_server(client, public_key, u_decomp, v_decomp)
 		print("Finished secure minimum, sending to client for your confirmation...")
 		send(client, minimum)
 	elif '3' in option:
 		print("Secure squared euclidean distance selected, please enter u: ", end='')
 		u = get_vector_input_server(public_key)
 		v = receive(client)
-		ssed = secure_squared_euclidean_distance_server(client, public_key, N, u, v)
+		ssed = secure_squared_euclidean_distance_server(client, public_key, u, v)
 		print("Finished secure squared euclidean distance, sending to client for your confirmation...")
 		send(client, ssed)
 
@@ -86,10 +83,10 @@ while True:
 		print("Secure Bit-OR selected, please enter o1 [0,1]: ", end='')
 		o1 = public_key.encrypt(bool(int(input())))
 		o2 = receive(client)
-		bitor = secure_bitor_server(client, public_key, N, o1, o2)
+		bitor = secure_bitor_server(client, public_key, o1, o2)
 		print("Finished secure Bit-OR, sending to client for your confirmation...")
 		send(client, bitor)
-		
+
 	elif '9' in option:
 		break
 

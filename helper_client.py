@@ -37,7 +37,7 @@ def print_menu():
 
 	return str(input())
 
-def secure_multiplication_client(server, public_key, private_key, N):
+def secure_multiplication_client(server, public_key, private_key):
 	# Recieve a' and b' from server
 	a_prime = receive(server)
 	b_prime = receive(server)
@@ -88,9 +88,9 @@ def secure_bit_decomposition_client(server, private_key):
 		return secure_bit_decomposition_client(server, private_key)
 
 
-def secure_minimum_client(server, public_key, private_key, N):
+def secure_minimum_client(server, public_key, private_key):
 	for i in range(32):
-		secure_multiplication_client(server, public_key, private_key, N)
+		secure_multiplication_client(server, public_key, private_key)
 
 	# Receive Gamma' and L'
 	Gamma_prime = receive(server)
@@ -116,6 +116,6 @@ def secure_minimum_client(server, public_key, private_key, N):
 	send(server, public_key.encrypt(alpha))
 
 
-def secure_squared_euclidean_distance_client(server, public_key, private_key, N, length):
+def secure_squared_euclidean_distance_client(server, public_key, private_key, length):
 	for i in range(length):
-		secure_multiplication_client(server, public_key, private_key, N)
+		secure_multiplication_client(server, public_key, private_key)

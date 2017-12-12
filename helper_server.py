@@ -22,7 +22,7 @@ def un_permute(l, other):
 	return a
 
 
-def secure_multiplication_server(client, public_key, N, u, v):
+def secure_multiplication_server(client, public_key, u, v):
 	# Pick two random numbers
 	ra = randrange(0, public_key.n // 2)
 	rb = randrange(0, public_key.n // 2)
@@ -101,16 +101,16 @@ def secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m):
 	else:
 		return secure_bit_decomposition_server(client, public_key, enc_x, bitlength_m)
 
-def secure_bitor_server(client, public_key, N, o1, o2):
+def secure_bitor_server(client, public_key, o1, o2):
 	# Since o1 & o2 are bits, o1 * o2 = o1 AND o2
-	o1_AND_o2 = secure_multiplication_server(client, public_key, N, o1, o2)
-	
+	o1_AND_o2 = secure_multiplication_server(client, public_key, o1, o2)
+
 	# E(o1 OR o2) = E(o1+o2) * E(o1 AND o2)^(N-1)
 	o1_OR_o2 = (o1+o2) - o1_AND_o2
 
 	return o1_OR_o2
 
-def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
+def secure_minimum_server(client, public_key, u_decomp, v_decomp):
 	# Randomly choose functionality F
 	F = choice(['u > v', 'u < v'])
 
@@ -122,7 +122,7 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 
 	# For each bit
 	for u_i, v_i in zip(u_decomp, v_decomp):
-		u_times_v = secure_multiplication_server(client, public_key, N, u_i, v_i)
+		u_times_v = secure_multiplication_server(client, public_key, u_i, v_i)
 
 		# Append random number r^
 		r.append(public_key.get_random_lt_n())
@@ -171,10 +171,10 @@ def secure_minimum_server(client, public_key, N, u_decomp, v_decomp):
 	return total_minimum
 
 
-def secure_squared_euclidean_distance_server(client, public_key, N, u, v):
+def secure_squared_euclidean_distance_server(client, public_key, u, v):
 	u_minus_v = [(a - b) for a, b in zip(u, v)]
 
-	squared = [secure_multiplication_server(client, public_key, N, x, x) for x in u_minus_v]
+	squared = [secure_multiplication_server(client, public_key, x, x) for x in u_minus_v]
 
 	summed = public_key.encrypt(0)
 
