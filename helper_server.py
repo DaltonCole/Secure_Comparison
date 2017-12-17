@@ -24,9 +24,24 @@ def un_permute(l, other):
 	return a
 
 
-def secure_kNN_Bob(C1, C2, public_key, Q):
-	raise NotImplementedError
-	# TODO: Bob
+def secure_kNN_Bob(C1, C2, public_key, query_Q, k, m, n):
+	# Part 1
+	E_q = [public_key.encrypt(q_i) for q_i in query_Q]
+	send(C1, E_q)
+
+	# Part 4/5/6
+	t_prime = []
+
+	for h in range(m):
+		tp_h = []
+		for j in range(k):
+			r_jh = receive(C1)
+			γprime_jh = receive(C2)
+			tp_h.append(γprime_jh - r_jh)
+
+		t_prime.append(tuple(tp_h))
+
+	return tuple(t_prime)
 
 
 def secure_multiplication_server(client, public_key, u, v):
