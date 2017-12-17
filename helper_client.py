@@ -1,7 +1,47 @@
 
 from helper_helper import send, receive, get_vector_input
+import csv
+from phe import paillier
 
-get_vector_input_client = get_vector_input
+
+def read_csv_database(filename, public_key, is_encrypted=True):
+	"""Generate an encrypted database from a CSV."""
+	database = []
+	row_len = 0
+
+	with open(filename, newline='') as csvfile:
+		reader = csv.reader(csvfile)
+
+		for row in reader:
+			if not row_len:
+				row_len = len(row)
+			elif len(row) != row_len:
+				raise RuntimeError("Uneven csv, lengths {} and {}".format(len(row), row_len))
+
+			db_row = []
+			for cell_val in map(int, row):
+
+				if is_encrypted:
+					enc_val = paillier.EncryptedNumber(public_key, cell_val)
+				else:
+					enc_val = public_key.encrypt(cell_val)
+
+				db_row.append(enc_val)
+
+			database.append(tuple(db_row))
+
+	return tuple(database)
+
+
+def secure_kNN_C1(Bob, C2, database_T, public_key):
+	raise NotImplementedError
+	# TODO: C1
+
+
+def secure_kNN_C2(Bob, C1, private_key):
+	raise NotImplementedError
+	# TODO: C2
+
 
 def bit_decomposition(num, public_key, private_key):
 	num = private_key.decrypt(num)
@@ -32,6 +72,8 @@ def print_menu():
 	print("\t(4) Secure Bit Decomposition")
 	print("\t(5) Secure Bit-OR")
 	print("\t(6) Secure Minimum-of-n")
+	print("\t(C2) Secure k-Nearest Neighbor C2, keyholder")
+	print("\t(C1) Secure k-Nearest Neighbor C1, database")
 	print("\t(9) QUIT")
 	print()
 	print("Option Number: ", end="")

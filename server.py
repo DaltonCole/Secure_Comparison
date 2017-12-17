@@ -1,8 +1,14 @@
 import socket
+from sys import argv
+
 from phe import paillier
-from helper_server import *
-import pickle
-from sys import getsizeof, argv
+
+from helper_server import send, receive, recompose, get_vector_input, \
+	secure_multiplication_server, secure_bit_decomposition_server, \
+	secure_minimum_server, secure_minimum_of_n_server, \
+	secure_bitor_server, secure_squared_euclidean_distance_server, \
+	secure_kNN_Bob
+
 
 if len(argv) != 2:
 	print("Usage: python3 {} (port number)".format(argv[0]))
@@ -27,6 +33,7 @@ serversocket.bind((host, port))
 serversocket.listen(10)
 
 # establish a connection
+print("Waiting for a client connection...")
 client, addr = serversocket.accept()
 
 print("Got a connection!")
@@ -41,7 +48,44 @@ while True:
 	# Recieve menu option
 	option = receive(client)
 
-	if '1' in option:
+	if option in ('c1', 'c2'):
+		# job is 'bob'
+		if option == 'c1':
+			client.close()
+			raise RuntimeError("C2 must be started before C1.")
+
+		C2 = client
+		port_C1C2 = receive(C2)
+		assert isinstance(port_C1C2, int)
+
+		print("Secure k-Nearest Neighbor selected by C2, you are Bob.")
+
+		port_C1 = port + 1
+		socket_C1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		socket_C1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		socket_C1.bind((host, port_C1))
+		socket_C1.listen(10)
+		print("Start C1 on port {}; I'll wait".format(port_C1))
+		C1, addr = socket_C1.accept()
+		print("Heard from C1!")
+
+		pk_C1 = receive(C1)
+		assert isinstance(pk_C1, paillier.PaillierPublicKey)
+		option_C1 = receive(C1)
+		if option_C1 != 'c1':
+			raise RuntimeError("C1 MUST select C1; got {!r}".format(option_C1))
+
+		send(C1, port_C1C2)
+
+		print("Please enter the query tuple Q: ", end='')
+		Q = tuple(map(int, input().split()))
+
+		print("Starting SkNN.")
+		t_prime = secure_kNN_Bob(C1, C2, public_key, Q)
+
+		# TODO: handle
+
+	elif option == '1':
 		print("Secure multiplication selected, please enter u: ", end='')
 		# Get u from user
 		u = public_key.encrypt(int(input()))
@@ -53,7 +97,8 @@ while True:
 		# For Confirmation
 		print("Finished secure multiplication, sending to client for your confirmation...")
 		send(client, u_times_v)
-	elif '2' in option:
+
+	elif option == '2':
 		print("Secure minimum selected, please enter u: ", end='')
 		enc_u = public_key.encrypt(int(input()))
 		enc_v = receive(client)
@@ -63,15 +108,16 @@ while True:
 		min_recomp = recompose(public_key, minimum)
 		print("Finished secure minimum, sending to client for your confirmation...")
 		send(client, min_recomp)
-	elif '3' in option:
+
+	elif option == '3':
 		print("Secure squared euclidean distance selected, please enter u: ", end='')
-		u = get_vector_input_server(public_key)
+		u = get_vector_input(public_key)
 		v = receive(client)
 		ssed = secure_squared_euclidean_distance_server(client, public_key, u, v)
 		print("Finished secure squared euclidean distance, sending to client for your confirmation...")
 		send(client, ssed)
 
-	elif '4' in option:
+	elif option == '4':
 		print("Secure bit decomposition selected.")
 		enc_x = receive(client)
 		m = receive(client)
@@ -80,7 +126,7 @@ while True:
 		print("Finished secure bit decomposition, sending to client")
 		send(client, x_decomp)
 
-	elif '5' in option:
+	elif option == '5':
 		print("Secure Bit-OR selected, please enter o1 [0,1]: ", end='')
 		o1 = public_key.encrypt(bool(int(input())))
 		o2 = receive(client)
@@ -88,7 +134,7 @@ while True:
 		print("Finished secure Bit-OR, sending to client for your confirmation...")
 		send(client, bitor)
 
-	elif '6' in option:
+	elif option == '6':
 		print("Secure minimum-of-n selected.")
 		enc_d = receive(client)
 		d_min = secure_minimum_of_n_server(client, public_key, enc_d)
@@ -96,8 +142,11 @@ while True:
 		print("Finished secure minimum-of-n, sending to client...")
 		send(client, d_min_recomp)
 
-	elif '9' in option:
+	elif option == '9':
 		break
+
+	else:
+		print("Unexpected value from client: {!r}".format(option))
 
 print("Closing connection")
 client.close()

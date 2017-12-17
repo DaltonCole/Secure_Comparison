@@ -1,12 +1,14 @@
 import socket
+import sys
 from phe import paillier
-import pickle
-from helper_client import *
-from sys import getsizeof, argv
-import time
+from helper_client import send, receive, print_menu, read_csv_database, \
+	get_vector_input, secure_kNN_C1, secure_kNN_C2, \
+	secure_multiplication_client, secure_bit_decomposition_client, \
+	secure_minimum_client, secure_squared_euclidean_distance_client, \
+	secure_minimum_of_n_client
 
-if len(argv) != 2:
-	print("Usage: python3 {} (port number)".format(argv[0]))
+if len(sys.argv) != 2:
+	print("Usage: python3 {} (port number)".format(sys.argv[0]))
 	quit()
 
 ### Initalize Connection Process ###
@@ -16,7 +18,10 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # get local machine name
 host = 'localhost'
 
-port = int(argv[1])
+port = int(sys.argv[1])
+
+if port < 1024 or 65535 < port:
+	raise RuntimeError("Bad port, should be in [49153, 65534]")
 
 # connection to hostname on the port.
 server.connect((host, port))
@@ -33,7 +38,67 @@ send(server, public_key)
 while True:
 	option = print_menu()
 
-	if '1' in option:
+	if 'c' in option.lower():
+		Bob = server
+
+		if '2' in option:
+			# job is 'C2'
+			send(server, 'c2')
+
+			print("Secure k-Nearest Neighbor selected, you are C2.")
+			port_C1C2 = port - 1
+			send(server, port_C1C2)
+
+			socket_C1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			socket_C1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			socket_C1.bind((host, port_C1C2))
+			socket_C1.listen(10)
+			print("Waiting for C1...")
+			C1, C1_addr = socket_C1.accept()
+			print("Heard from C1!")
+
+			checkval = receive(C1)
+			if checkval != port_C1C2:
+				raise RuntimeError("Bad checkval from C1.")
+			print("OK checkval from C1.")
+
+			send(C1, public_key)
+
+			print("Sent pk to C1. Starting SkNN.")
+			secure_kNN_C2(Bob, C1, private_key)
+
+			# TODO: handle result
+
+		elif '1' in option:
+			# job is 'C1'
+			send(server, 'c1')
+
+			print("Secure k-Nearest Neighbor selected, you are C1.")
+
+			port_C1C2 = receive(Bob)
+			print("Connecting to C2...")
+			C2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			C2.connect((host, port_C1C2))
+			send(C2, port_C1C2)
+			pk = receive(C2)
+			print("Received pk from C2.")
+
+			print("Enter the filename of T, the encrypted database: ", end='')
+			Tname = input('')
+			database_T = read_csv_database(Tname, pk)
+
+			print("Read database. Starting SkNN.")
+			secure_kNN_C1(Bob, C2, database_T, pk)
+
+			# C1 is doesn't have a 'normal' connection to server, so we bail
+			print("Thanks for your help, C1!")
+			server.close()
+			sys.exit()
+
+		else:
+			raise ValueError("Bad option {!r}".format(option))
+
+	elif '1' in option:
 		send(server, '1')
 		print("Secure multiplication selected, please enter v: ", end='')
 		# Get user input
@@ -57,7 +122,7 @@ while True:
 	elif '3' in option:
 		send(server, '3')
 		print("Secure squared euclidean distance selected, please enter v: ", end='')
-		v = get_vector_input_client(public_key)
+		v = get_vector_input(public_key)
 		send(server, v)
 		secure_squared_euclidean_distance_client(server, public_key, private_key, len(v))
 		print("SSED(u, v) = {}".format(private_key.decrypt(receive(server))))
@@ -104,7 +169,7 @@ while True:
 		dmin = receive(server)
 		print("min(d) = {}".format(private_key.decrypt(dmin)))
 
-	elif '9' in option:
+	elif '9' in option or 'q' in option.lower():
 		send(server, '9')
 		break
 	print()

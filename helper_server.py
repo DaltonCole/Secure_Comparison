@@ -7,6 +7,7 @@ from helper_helper import send, receive, get_vector_input
 
 get_vector_input_server = get_vector_input
 
+
 def permute(l):
 	other = [x for x in range(0, len(l))]
 	shuffle(other)
@@ -21,6 +22,11 @@ def un_permute(l, other):
 		a[y] = x
 
 	return a
+
+
+def secure_kNN_Bob(C1, C2, public_key, Q):
+	raise NotImplementedError
+	# TODO: Bob
 
 
 def secure_multiplication_server(client, public_key, u, v):
