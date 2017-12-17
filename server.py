@@ -10,7 +10,8 @@ from helper_server import secure_kNN_Bob, recompose, \
 	secure_bitor_server, secure_squared_euclidean_distance_server
 
 
-parser = argparse.ArgumentParser("Server for SkNN and its subprotocols.")
+parser = argparse.ArgumentParser(description="Server for SkNN and its "
+								"subprotocols.")
 parser.add_argument('port', type=int, default=DEFAULT_PORT, nargs='?',
 					help='port to listen on (default: %(default)s)')
 

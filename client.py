@@ -10,12 +10,17 @@ from helper_client import  print_menu, read_csv_database, \
 	secure_minimum_of_n_client
 from keys import sk_from_file, generate_keypair
 
-parser = argparse.ArgumentParser("Client for SkNN and its subprotocols.")
+OPTIONS = ('c1', 'c2', 'C1', 'C2', '1', '2', '3', '4', '5', '6', '9')
+
+parser = argparse.ArgumentParser(description="Client for SkNN and its "
+								"subprotocols.")
 parser.add_argument('port', type=int, default=DEFAULT_PORT, nargs='?',
 					help='port to connect to (default: %(default)s)')
 parser.add_argument('-s', '--secret-key', type=argparse.FileType(),
 					dest='sk', help='pregenerated secret key. If omitted we '
 					'will generate a key pair.')
+parser.add_argument('-o', '--option', choices=OPTIONS, metavar='OPT',
+					dest='option', help='the option to execute. Start interactively to see available options')
 
 ARGS = parser.parse_args()
 port = ARGS.port
@@ -50,7 +55,7 @@ send(server, public_key)
 
 ### Start Menu ###
 while True:
-	option = print_menu()
+	option = ARGS.option or print_menu()
 
 	if 'c' in option.lower():
 		Bob = server
