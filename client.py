@@ -1,15 +1,32 @@
 import socket
 import sys
-from phe import paillier
-from helper_client import send, receive, print_menu, read_csv_database, \
-	get_vector_input, secure_kNN_C1, secure_kNN_C2, \
+import argparse
+
+from helper_helper import send, receive, get_vector_input, DEFAULT_PORT
+from helper_client import  print_menu, read_csv_database, \
+	secure_kNN_C1, secure_kNN_C2, \
 	secure_multiplication_client, secure_bit_decomposition_client, \
 	secure_minimum_client, secure_squared_euclidean_distance_client, \
 	secure_minimum_of_n_client
+from keys import sk_from_file, generate_keypair
 
-if len(sys.argv) != 2:
-	print("Usage: python3 {} (port number)".format(sys.argv[0]))
-	quit()
+parser = argparse.ArgumentParser("Client for SkNN and its subprotocols.")
+parser.add_argument('port', type=int, default=DEFAULT_PORT,
+					help='port to connect to (default: %(default)s)')
+parser.add_argument('--sk', '--secret-key', type=argparse.FileType(),
+					dest='sk', help='pregenerated secret key. If omitted we '
+					'will generate a key pair.')
+
+ARGS = parser.parse_args()
+port = ARGS.port
+public_key = private_key = None
+
+if ARGS.sk:
+	private_key = sk_from_file(ARGS.sk)
+	public_key = private_key.public_key
+else:
+	public_key, private_key = generate_keypair()
+
 
 ### Initalize Connection Process ###
 # create a socket object
@@ -17,8 +34,6 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # get local machine name
 host = 'localhost'
-
-port = int(sys.argv[1])
 
 if port < 1024 or 65535 < port:
 	raise RuntimeError("Bad port, should be in [49153, 65534]")
@@ -29,8 +44,6 @@ server.connect((host, port))
 
 ### Send Config Paramaters ###
 # Send Public Key
-public_key, private_key = paillier.generate_paillier_keypair()#n_length=33)
-public_key.max_int = public_key.n - 1
 send(server, public_key)
 ##############################
 

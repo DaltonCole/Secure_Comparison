@@ -1,6 +1,8 @@
 
 import pickle
 
+DEFAULT_PORT = 49556
+
 def receive(sock):
     rawsize = sock.recv(128)
     size = int.from_bytes(rawsize, 'big')

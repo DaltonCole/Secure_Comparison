@@ -1,5 +1,5 @@
 
-from helper_helper import send, receive, get_vector_input
+from helper_helper import send, receive
 import csv
 from phe import paillier
 from random import randrange, choice, shuffle

@@ -1,3 +1,9 @@
+### Custom
+*.private.json
+*.public.json
+setup.cfg
+
+### Standard Python gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/*
 *.py[cod]
