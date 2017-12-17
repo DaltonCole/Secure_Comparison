@@ -1,18 +1,21 @@
 import socket
-from sys import argv
+import argparse
 
 from phe import paillier
 
-from helper_server import send, receive, recompose, get_vector_input, \
+from helper_helper import send, receive, get_vector_input, DEFAULT_PORT
+from helper_server import secure_kNN_Bob, recompose, \
 	secure_multiplication_server, secure_bit_decomposition_server, \
 	secure_minimum_server, secure_minimum_of_n_server, \
-	secure_bitor_server, secure_squared_euclidean_distance_server, \
-	secure_kNN_Bob
+	secure_bitor_server, secure_squared_euclidean_distance_server
 
 
-if len(argv) != 2:
-	print("Usage: python3 {} (port number)".format(argv[0]))
-	quit()
+parser = argparse.ArgumentParser("Server for SkNN and its subprotocols.")
+parser.add_argument('port', type=int, default=DEFAULT_PORT,
+					help='port to listen on (default: %(default)s)')
+
+ARGS = parser.parse_args()
+port = ARGS.port
 
 # create a socket object
 serversocket = socket.socket(
@@ -21,10 +24,8 @@ serversocket = socket.socket(
 # get local machine name
 host = 'localhost'
 
-
 # Try to make it so socket closes quickly
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-port = int(argv[1])
 
 # bind to the port
 serversocket.bind((host, port))
@@ -33,7 +34,7 @@ serversocket.bind((host, port))
 serversocket.listen(10)
 
 # establish a connection
-print("Waiting for a client connection...")
+print("Waiting for a client connection on {}...".format(port))
 client, addr = serversocket.accept()
 
 print("Got a connection!")

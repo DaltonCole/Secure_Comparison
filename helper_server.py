@@ -3,9 +3,7 @@ from phe import paillier
 from phe.util import invert
 import math
 
-from helper_helper import send, receive, get_vector_input
-
-get_vector_input_server = get_vector_input
+from helper_helper import send, receive
 
 
 def permute(l):
