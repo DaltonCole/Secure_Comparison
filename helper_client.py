@@ -2,6 +2,7 @@
 from helper_helper import send, receive, get_vector_input
 import csv
 from phe import paillier
+from random import randrange, choice, shuffle
 
 
 def read_csv_database(filename, public_key, is_encrypted=True):
@@ -34,8 +35,28 @@ def read_csv_database(filename, public_key, is_encrypted=True):
 
 
 def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
-	raise NotImplementedError
-	# TODO: C1
+	"""
+		database_T = E(t) 
+	"""
+	Q = receive(Bob)
+	l = []
+	for i, t in  enumerate(database_T):
+		l.append((i, secure_squared_euclidean_distance_client(Q, t)))
+
+	# Send to C2
+	send(C2, l)
+
+
+	# Receive delta from C2
+	delta = receive(C2)
+
+	# Assuming delta = t_i,j
+	for t in delta:
+		r = randrange(0, n)
+		gamma = t + public_key.encrypt(r)
+		send(C2, gamma)
+		send(Bob, r)
+
 
 
 def secure_kNN_C2(Bob, C1, private_key, m, n):
