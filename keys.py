@@ -34,7 +34,7 @@ def sk_to_file(sk: paillier.PaillierPrivateKey, skfile):
         "p": sk.p,
         "q": sk.q
     }
-    json.dump(data, skfile)
+    json.dump(data, skfile, indent='\t')
 
 
 def pk_from_file(pkfile) -> paillier.PaillierPublicKey:
@@ -56,10 +56,13 @@ def sk_from_file(skfile) -> paillier.PaillierPrivateKey:
     return sk
 
 
-def generate_keypair():
+def generate_keypair(opt=None, basename=None):
     print("## Interactive Key Generation ##")
-    print("How would you like to generate your key?")
-    opt = input("(b) by bit-length, or (p) from p and q: ").lower()
+
+    if opt is None:
+        print("How would you like to generate your key?")
+        opt = input("(b) by bit-length, or (p) from p and q: ").lower()
+
     pk = sk = None
 
     if 'b' in opt:
@@ -76,7 +79,9 @@ def generate_keypair():
     else:
         raise ValueError("Bad input option {!r}".format(opt))
 
-    basename = input("Enter a basename for the key files: ")
+    if basename is None:
+        basename = input("Enter a basename for the key files: ")
+
     pkname = '{}.public.json'.format(basename)
     skname = '{}.private.json'.format(basename)
 
@@ -88,3 +93,20 @@ def generate_keypair():
     print("Wrote sk to {!r}".format(skname))
 
     return pk, sk
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser("Generate Paillier key pair interactively.")
+    parser.add_argument('--name', help="Base file name for the output files.")
+    exclus_grp = parser.add_mutually_exclusive_group()
+    exclus_grp.add_argument('-p', '--pq', help="Generate from p and q values.",
+                            action='store_const', const='p', dest='opt')
+    exclus_grp.add_argument('-b', '--bit', help="Generate by bit-length.",
+                            action='store_const', const='b', dest='opt')
+
+
+    ARGS = parser.parse_args()
+
+    generate_keypair(ARGS.opt, ARGS.name)
