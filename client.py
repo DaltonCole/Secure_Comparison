@@ -11,9 +11,9 @@ from helper_client import  print_menu, read_csv_database, \
 from keys import sk_from_file, generate_keypair
 
 parser = argparse.ArgumentParser("Client for SkNN and its subprotocols.")
-parser.add_argument('port', type=int, default=DEFAULT_PORT,
+parser.add_argument('port', type=int, default=DEFAULT_PORT, nargs='?',
 					help='port to connect to (default: %(default)s)')
-parser.add_argument('--sk', '--secret-key', type=argparse.FileType(),
+parser.add_argument('-s', '--secret-key', type=argparse.FileType(),
 					dest='sk', help='pregenerated secret key. If omitted we '
 					'will generate a key pair.')
 
@@ -25,6 +25,7 @@ if ARGS.sk:
 	private_key = sk_from_file(ARGS.sk)
 	public_key = private_key.public_key
 else:
+	print("No secret key provided, starting key generation.")
 	public_key, private_key = generate_keypair()
 
 

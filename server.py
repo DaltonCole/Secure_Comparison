@@ -11,7 +11,7 @@ from helper_server import secure_kNN_Bob, recompose, \
 
 
 parser = argparse.ArgumentParser("Server for SkNN and its subprotocols.")
-parser.add_argument('port', type=int, default=DEFAULT_PORT,
+parser.add_argument('port', type=int, default=DEFAULT_PORT, nargs='?',
 					help='port to listen on (default: %(default)s)')
 
 ARGS = parser.parse_args()

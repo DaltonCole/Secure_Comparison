@@ -24,7 +24,7 @@ def pk_to_file(pk: paillier.PaillierPublicKey, pkfile):
     data = {
         "n": pk.n
     }
-    json.dump(data, pkfile)
+    json.dump(data, pkfile, indent='\t')
 
 
 def sk_to_file(sk: paillier.PaillierPrivateKey, skfile):
@@ -42,7 +42,7 @@ def pk_from_file(pkfile) -> paillier.PaillierPublicKey:
     if "n" not in data:
         raise ValueError("pk file is missing key 'n'")
 
-    return make_pk(data.n)
+    return make_pk(data['n'])
 
 
 def sk_from_file(skfile) -> paillier.PaillierPrivateKey:
@@ -50,8 +50,8 @@ def sk_from_file(skfile) -> paillier.PaillierPrivateKey:
     if any(attr not in data for attr in ('n', 'p', 'q')):
         raise ValueError("Missing keys in sk file")
 
-    pk = make_pk(data.n)
-    sk = paillier.PaillierPrivateKey(pk, data.p, data.q)
+    pk = make_pk(data['n'])
+    sk = paillier.PaillierPrivateKey(pk, data['p'], data['q'])
 
     return sk
 
