@@ -1,14 +1,16 @@
+#!/usr/bin/env python3
 import socket
 import sys
 import argparse
 
 from helper_helper import send, receive, get_vector_input, DEFAULT_PORT
-from helper_client import  print_menu, read_csv_database, \
+from helper_client import print_menu, \
 	secure_kNN_C1, secure_kNN_C2, \
 	secure_multiplication_client, secure_bit_decomposition_client, \
 	secure_minimum_client, secure_squared_euclidean_distance_client, \
 	secure_minimum_of_n_client
 from keys import sk_from_file, generate_keypair
+from database import read_csv_database
 
 OPTIONS = ('c1', 'c2', 'C1', 'C2', '1', '2', '3', '4', '5', '6', '9')
 

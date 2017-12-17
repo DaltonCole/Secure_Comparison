@@ -1,42 +1,12 @@
 
+from random import randrange
+
 from helper_helper import send, receive
-import csv
-from phe import paillier
-from random import randrange, choice, shuffle
-
-
-def read_csv_database(filename, public_key, is_encrypted=True):
-	"""Generate an encrypted database from a CSV."""
-	database = []
-	row_len = 0
-
-	with open(filename, newline='') as csvfile:
-		reader = csv.reader(csvfile)
-
-		for row in reader:
-			if not row_len:
-				row_len = len(row)
-			elif len(row) != row_len:
-				raise RuntimeError("Uneven csv, lengths {} and {}".format(len(row), row_len))
-
-			db_row = []
-			for cell_val in map(int, row):
-
-				if is_encrypted:
-					enc_val = paillier.EncryptedNumber(public_key, cell_val)
-				else:
-					enc_val = public_key.encrypt(cell_val)
-
-				db_row.append(enc_val)
-
-			database.append(tuple(db_row))
-
-	return tuple(database)
 
 
 def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
 	"""
-		database_T = E(t) 
+		database_T = E(t)
 	"""
 	Q = receive(Bob)
 	l = []
@@ -62,7 +32,7 @@ def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
 def secure_kNN_C2(Bob, C1, private_key, m, n):
 	l = receive(C1)
 	d = [private_key.decrypt(l_i) for l_i in l]
-	
+
 	# Calculate k minimum values
 	delta = sorted(d)[:k]
 
