@@ -33,12 +33,12 @@ def read_csv_database(filename, public_key, is_encrypted=True):
 	return tuple(database)
 
 
-def secure_kNN_C1(Bob, C2, database_T, public_key):
+def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
 	raise NotImplementedError
 	# TODO: C1
 
 
-def secure_kNN_C2(Bob, C1, private_key):
+def secure_kNN_C2(Bob, C1, private_key, m, n):
 	raise NotImplementedError
 	# TODO: C2
 

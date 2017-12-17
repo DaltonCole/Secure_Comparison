@@ -64,8 +64,12 @@ while True:
 
 			send(C1, public_key)
 
+			m_n = receive(C1)
+			assert isinstance(m_n, tuple) and len(m_n) == 2
+			m, n = m_n
+
 			print("Sent pk to C1. Starting SkNN.")
-			secure_kNN_C2(Bob, C1, private_key)
+			secure_kNN_C2(Bob, C1, private_key, m, n)
 
 			# TODO: handle result
 
@@ -86,9 +90,15 @@ while True:
 			print("Enter the filename of T, the encrypted database: ", end='')
 			Tname = input('')
 			database_T = read_csv_database(Tname, pk)
+			m = len(database_T[0])
+			n = len(database_T)
+			print("Read database. (attributes, records) = (m, n) =", (m, n))
+
+			send(Bob, (m, n))
+			send(C1, (m, n))
 
 			print("Read database. Starting SkNN.")
-			secure_kNN_C1(Bob, C2, database_T, pk)
+			secure_kNN_C1(Bob, C2, database_T, pk, m, n)
 
 			# C1 is doesn't have a 'normal' connection to server, so we bail
 			print("Thanks for your help, C1!")

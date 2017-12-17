@@ -80,6 +80,14 @@ while True:
 		print("Please enter the query tuple Q: ", end='')
 		Q = tuple(map(int, input().split()))
 
+		m_n = receive(C1)
+		assert isinstance(m_n, tuple) and len(m_n) == 2
+		m, n = m_n
+
+		if len(Q) != m:
+			raise RuntimeError("Length of Q doesn't match length of "
+				"database records; {} vs {}".format(len(Q), m))
+
 		print("Starting SkNN.")
 		t_prime = secure_kNN_Bob(C1, C2, public_key, Q)
 
