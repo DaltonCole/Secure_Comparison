@@ -60,8 +60,19 @@ def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
 
 
 def secure_kNN_C2(Bob, C1, private_key, m, n):
-	raise NotImplementedError
-	# TODO: C2
+	l = receive(C1)
+	d = [private_key.decrypt(l_i) for l_i in l]
+	
+	# Calculate k minimum values
+	delta = sorted(d)[:k]
+
+	# Send delta to C2
+	send(C1, delta)
+
+	for t in delta:
+		gamma = receive(C1)
+		gamma_prime = public_key.decrypt(gamma)
+		send(Bob, gamma_prime)
 
 
 def bit_decomposition(num, public_key, private_key):
