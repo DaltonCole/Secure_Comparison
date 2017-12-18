@@ -144,7 +144,7 @@ while True:
 		# Send v to server
 		send(server, v)
 		print("Sent v to server")
-		secure_multiplication_client(server, public_key, private_key)
+		secure_multiplication_client(server, private_key)
 
 		# Confirmation for convenience of user
 		print("u * v = {}".format(private_key.decrypt(receive(server))))
@@ -155,14 +155,14 @@ while True:
 		send(server, enc_v)
 		secure_bit_decomposition_client(server, private_key)
 		secure_bit_decomposition_client(server, private_key)
-		secure_minimum_client(server, public_key, private_key)
+		secure_minimum_client(server, private_key)
 		print("Min(u, v) = {}".format(private_key.decrypt(receive(server))))
 	elif '3' in option:
 		send(server, '3')
 		print("Secure squared euclidean distance selected, please enter v: ", end='')
 		v = get_vector_input(public_key)
 		send(server, v)
-		secure_squared_euclidean_distance_client(server, public_key, private_key, len(v))
+		secure_squared_euclidean_distance_client(server, private_key, len(v))
 		print("SSED(u, v) = {}".format(private_key.decrypt(receive(server))))
 
 	elif '4' in option:
@@ -190,7 +190,7 @@ while True:
 		# Send o2 to server
 		send(server, o2)
 		print("Sent o2 to server")
-		secure_multiplication_client(server, public_key, private_key)
+		secure_multiplication_client(server, private_key)
 		print("OR(o1, o2) = {}".format(private_key.decrypt(receive(server))))
 
 	elif '6' in option:
