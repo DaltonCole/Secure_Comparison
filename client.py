@@ -10,7 +10,8 @@ from helper_client import print_menu, \
 	secure_minimum_client, secure_squared_euclidean_distance_client, \
 	secure_minimum_of_n_client
 from keys import sk_from_file, generate_keypair
-from database import read_csv_database, write_2d_to_csv
+from database import read_csv_database
+
 
 OPTIONS = ('c1', 'c2', 'C1', 'C2', '1', '2', '3', '4', '5', '6', '9')
 
@@ -18,6 +19,8 @@ parser = argparse.ArgumentParser(description="Client for SkNN and its "
 								"subprotocols.")
 parser.add_argument('port', type=int, default=DEFAULT_PORT, nargs='?',
 					help='port to connect to (default: %(default)s)')
+parser.add_argument('--host', default='localhost', dest='host',
+					help='hostname to connect to (default: %(default)s)')
 parser.add_argument('-s', '--secret-key', type=argparse.FileType(),
 					dest='sk', help='pregenerated secret key. If omitted we '
 					'will generate a key pair.')
@@ -26,6 +29,7 @@ parser.add_argument('-o', '--option', choices=OPTIONS, metavar='OPT',
 
 ARGS = parser.parse_args()
 port = ARGS.port
+host = ARGS.host
 public_key = private_key = None
 
 if ARGS.sk:
@@ -41,9 +45,6 @@ else:
 ### Initalize Connection Process ###
 # create a socket object
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# get local machine name
-host = 'localhost'
 
 if port < 1024 or 65535 < port:
 	raise RuntimeError("Bad port, should be in [49153, 65534]")
