@@ -2,12 +2,13 @@
 
 This project is a python3 implementation of the paper [Secure k-Nearest Neighbor Query over Encrypted Data in Outsourced Environments](http://web.mst.edu/~wjiang/SkNN-ICDE14.pdf).
 
-### Installation
+## Installation
 All code is written in python3. The dependencies can be installed using
 ```
 pip install phe
 ```
-### Usage
+
+## Usage
 Communication between the parties is networked on localhost. The server and client must each be run independently to start a session.
 In one terminal, type
 ```
@@ -17,7 +18,7 @@ In a second terminal, type
 ```
 ./client.py
 ```
-After running [key generation](#Key_Generation) you will be asked for a [functionality](#Functions) to perform.
+After running [key generation](#Key-Generation) you will be asked for a [functionality](#Functions) to perform.
 
 ### Server
 The server represents P1 (or Bob for SkNN)
@@ -29,6 +30,7 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+  --host HOST  hostname to listen on (default: localhost)
 ```
 
 
@@ -42,6 +44,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --host HOST           hostname to connect to (default: localhost)
   -s SK, --secret-key SK
                         pregenerated secret key. If omitted we will generate a
                         key pair.
@@ -65,8 +68,34 @@ Example:
 ./keys.py --name example -b
 ```
 
-### Functions
-1. [Secure Multiplication](#SM)
+### Database Encryption
+database.py performs Paillier encryption of CSV databases. Functions 1-6 can be performed without a database, but this step is necessar for performing [SkNN](#SkNN).
+```
+usage: database.py [-h] [--csv CSV] [--key KEY] [--name NAME]
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --csv CSV    Unencrypted CSV database to read.
+  --key KEY    Key to encrypt the database with.
+  --name NAME  Base file name for the output file.
+```
+
+First you must have a database represented in CSV format, for example
+```
+1,2,3,8
+4,5,6,25
+7,8,9,3
+```
+Assuming this file is named database.csv and you have already generated a public key called `example`,
+you can encrypt the database as `encryptedDB.enc.csv` by running
+```
+./database.py --csv database.csv --key example.public.json --name encryptedDB
+```
+
+
+##
+# Functions
+1. [Secure Multiplication](#Secure_Multiplication)
 2. [Secure Minimum](#SMIN)
 3. [Secure Squared Euclidian Distance](#SSED)
 4. [Secure Bit Decomposition](#SBD)
@@ -74,6 +103,22 @@ Example:
 6. [Secure Minimum-of-n](#SMIN-of-n)
 7. [Secure k-Nearest Neighbors](#SkNN)
 
+## Secure Multiplication
+* Run `server.py` and `client.py` in two seperate terminals
+* Server: Enter u
+* Client: Enver v
+
+Example:
+```
+./server.py
+...
+Secure multiplication selected, please enter u: 2
+```
+```
+./client.py -s example.private.json -o 1
+Secure multiplication selected, please enter v: 3
+u * v = 6
+```
 
 ## SkNN
 
@@ -101,4 +146,3 @@ Example:
     * Enter the database name `testdb.enc.csv`
  * **Bob**:
     * Choose the output method for the result. `p` to print, `c` for CSV.
-
