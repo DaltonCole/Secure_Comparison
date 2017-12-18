@@ -11,7 +11,7 @@ sudo apt install libmpc-dev
 sudo pip3 install gmpy2 phe
 ```
 
-On some systems these may fail or require manual installation. If there are issues installing the dependencies, contact [Dalton Cole](mailto:drcg5@mst.edu) or [Samuel  Grush](mailto:skgn78).
+On some systems these may fail or require manual installation. If there are issues installing the dependencies, contact [Dalton Cole](mailto:drcg5@mst.edu) or [Samuel Grush](mailto:skgn78@mst.edu).
 
 ## Usage
 Communication between the parties is networked on localhost by default. 
@@ -79,7 +79,7 @@ Wrote sk to 'testk.private.json'
 ```
 
 ### Database Encryption
-database.py performs Paillier encryption of CSV databases. Functions 1-6 can be performed without a database, but this step is necessar for performing [SkNN](#SkNN).
+database.py performs Paillier encryption of CSV databases. Functions 1-6 can be performed without a database, but this step is necessary for performing [SkNN](#SkNN).
 ```
 usage: database.py [-h] [--csv CSV] [--key KEY] [--name NAME]
 
@@ -105,7 +105,7 @@ you can encrypt the database as `encrypted.enc.csv` by running
 
 ##
 # Functions
-1. [Secure Multiplication](secure-multiplication)
+1. [Secure Multiplication](#secure-multiplication)
 2. [Secure Minimum](#smin)
 3. [Secure Squared Euclidian Distance](#ssed)
 4. [Secure Bit Decomposition](#sbd)
