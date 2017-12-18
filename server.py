@@ -86,6 +86,9 @@ while True:
 		print("Please enter k, the number of records: ", end='')
 		k = int(input())
 
+		send(C1, k)
+		send(C2, k)
+
 		m_n = receive(C1)
 		assert isinstance(m_n, tuple) and len(m_n) == 2
 		m, n = m_n

@@ -4,7 +4,7 @@ from random import randrange
 from helper_helper import send, receive
 
 
-def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
+def secure_kNN_C1(Bob, C2, database_T, public_key, k, m, n):
 	"""
 		database_T = E(t)
 	"""
@@ -29,7 +29,7 @@ def secure_kNN_C1(Bob, C2, database_T, public_key, m, n):
 
 
 
-def secure_kNN_C2(Bob, C1, private_key, m, n):
+def secure_kNN_C2(Bob, C1, private_key, k, m, n):
 	l = receive(C1)
 	d = [private_key.decrypt(l_i) for l_i in l]
 
@@ -41,7 +41,7 @@ def secure_kNN_C2(Bob, C1, private_key, m, n):
 
 	for t in delta:
 		gamma = receive(C1)
-		gamma_prime = public_key.decrypt(gamma)
+		gamma_prime = private_key.public_key.decrypt(gamma)
 		send(Bob, gamma_prime)
 
 
