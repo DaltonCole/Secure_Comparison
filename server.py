@@ -13,16 +13,16 @@ parser = argparse.ArgumentParser(description="Server for SkNN and its "
 								"subprotocols.")
 parser.add_argument('port', type=int, default=DEFAULT_PORT, nargs='?',
 					help='port to listen on (default: %(default)s)')
+parser.add_argument('--host', default='localhost', dest='host',
+					help='hostname to listen on (default: %(default)s)')
 
 ARGS = parser.parse_args()
 port = ARGS.port
+host = ARGS.host
 
 # create a socket object
 serversocket = socket.socket(
 	        socket.AF_INET, socket.SOCK_STREAM)
-
-# get local machine name
-host = 'localhost'
 
 # Try to make it so socket closes quickly
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
