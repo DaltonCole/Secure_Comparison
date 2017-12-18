@@ -10,7 +10,7 @@ from helper_client import print_menu, \
 	secure_minimum_client, secure_squared_euclidean_distance_client, \
 	secure_minimum_of_n_client
 from keys import sk_from_file, generate_keypair
-from database import read_csv_database
+from database import read_csv_database, write_2d_to_csv
 
 OPTIONS = ('c1', 'c2', 'C1', 'C2', '1', '2', '3', '4', '5', '6', '9')
 
@@ -31,6 +31,8 @@ public_key = private_key = None
 if ARGS.sk:
 	private_key = sk_from_file(ARGS.sk)
 	public_key = private_key.public_key
+elif ARGS.option == 'c1':
+	print("Skipping key generation for C1.")
 else:
 	print("No secret key provided, starting key generation.")
 	public_key, private_key = generate_keypair()
@@ -94,8 +96,6 @@ while True:
 
 			print("Sent pk to C1. Starting SkNN.")
 			secure_kNN_C2(Bob, C1, private_key, k, m, n)
-
-			# TODO: handle result
 
 		elif '1' in option:
 			# job is 'C1'

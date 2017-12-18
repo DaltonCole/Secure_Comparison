@@ -2,10 +2,8 @@
 import socket
 import argparse
 
-from phe import paillier
-
 from helper_helper import send, receive, get_vector_input, DEFAULT_PORT
-from helper_server import secure_kNN_Bob, recompose, \
+from helper_server import secure_kNN_Bob, recompose, handle_sknn_output, \
 	secure_multiplication_server, secure_bit_decomposition_server, \
 	secure_minimum_server, secure_minimum_of_n_server, \
 	secure_bitor_server, secure_squared_euclidean_distance_server
@@ -68,12 +66,12 @@ while True:
 		socket_C1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		socket_C1.bind((host, port_C1))
 		socket_C1.listen(10)
-		print("Start C1 on port {}; I'll wait".format(port_C1))
+		print("Start C1 with options '{} -o c1'; I'll wait".format(port_C1))
 		C1, addr = socket_C1.accept()
 		print("Heard from C1!")
 
 		pk_C1 = receive(C1)
-		assert isinstance(pk_C1, paillier.PaillierPublicKey)
+		assert pk_C1 is None
 		option_C1 = receive(C1)
 		if option_C1 != 'c1':
 			raise RuntimeError("C1 MUST select C1; got {!r}".format(option_C1))
@@ -100,7 +98,8 @@ while True:
 		print("Starting SkNN.")
 		t_prime = secure_kNN_Bob(C1, C2, public_key, Q, k, m, n)
 
-		# TODO: handle
+		print("Finished SkNN.")
+		handle_sknn_output(t_prime)
 
 	elif option == '1':
 		print("Secure multiplication selected, please enter u: ", end='')

@@ -4,7 +4,7 @@ from phe.util import invert
 import math
 
 from helper_helper import send, receive
-
+from database import write_2d_to_csv
 
 def permute(l):
 	other = [x for x in range(0, len(l))]
@@ -22,6 +22,25 @@ def un_permute(l, other):
 	return a
 
 
+def handle_sknn_output(result):
+	inp = input("How to display t`; (p)rint to screen or (C)SV?: ").lower()
+
+	if 'c' in inp:
+		name = input("Input a base file name to output to: ")
+		if not name.lower().endswith('.csv'):
+			name = '{}.csv'.format(name)
+		write_2d_to_csv(name, result)
+		print("Printed to {!r}".format(name))
+
+	else:
+		if 'p' not in inp:
+			print("I didn't understand your answer; I'll just print.")
+		print("\n")
+		for row_j in result:
+			print(',\t'.join(map(str, row_j)))
+		print("\n")
+
+
 def secure_kNN_Bob(C1, C2, public_key, query_Q, k, m, n):
 	# Part 1
 	E_q = [public_key.encrypt(q_i) for q_i in query_Q]
@@ -30,14 +49,14 @@ def secure_kNN_Bob(C1, C2, public_key, query_Q, k, m, n):
 	# Part 4/5/6
 	t_prime = []
 
-	for h in range(m):
-		tp_h = []
-		for j in range(k):
+	for j in range(k):
+		tp_j = []
+		for h in range(m):
 			r_jh = receive(C1)
 			γprime_jh = receive(C2)
-			tp_h.append(γprime_jh - r_jh)
+			tp_j.append(γprime_jh - r_jh)
 
-		t_prime.append(tuple(tp_h))
+		t_prime.append(tuple(tp_j))
 
 	return tuple(t_prime)
 
