@@ -124,7 +124,7 @@ while True:
 			send(Bob, (m, n))
 			send(C2, (m, n))
 
-			print("Read database. Starting SkNN.")
+			print("Starting SkNN.")
 			secure_kNN_C1(Bob, C2, database_T, pk, k, m, n)
 
 			# C1 is doesn't have a 'normal' connection to server, so we bail
