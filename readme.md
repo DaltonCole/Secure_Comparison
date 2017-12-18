@@ -3,13 +3,19 @@
 This project is a python3 implementation of the paper [Secure k-Nearest Neighbor Query over Encrypted Data in Outsourced Environments](http://web.mst.edu/~wjiang/SkNN-ICDE14.pdf).
 
 ## Installation
-All code is written in python3. The dependencies can be installed using
+All code is written in python3. The Paillier encryption library [phe](https://pypi.python.org/pypi/phe/)
+requires [GNU multiprecision library](http://www.multiprecision.org) for large number calculations.  
+These dependencies can be installed using
 ```
-pip install phe
+sudo apt install libmpc-dev
+sudo pip3 install gmpy2 phe
 ```
 
+On some systems these may fail or require manual installation. If there are issues installing the dependencies, contact [Dalton Cole](mailto:drcg5@mst.edu) or [Samuel  Grush](mailto:skgn78).
+
 ## Usage
-Communication between the parties is networked on localhost. The server and client must each be run independently to start a session.
+Communication between the parties is networked on localhost by default. 
+The server and client must each be run independently to start a session.
 In one terminal, type
 ```
 ./server.py
@@ -18,7 +24,8 @@ In a second terminal, type
 ```
 ./client.py
 ```
-After running [key generation](#Key-Generation) you will be asked for a [functionality](#Functions) to perform.
+After running [key generation](#key-generation) you will be asked for a [functionality](#functions) to perform.
+Selecting a functionality will provide all instructions needed for that specific function.
 
 ### Server
 The server represents P1 (or Bob for SkNN)
@@ -35,7 +42,7 @@ optional arguments:
 
 
 ### Client
-The client represents P2 (or C1/C2 for SkNN)
+The client represents P2 (or C1/C2 for SkNN) and is the private key holder.
 ```
 usage: client.py [-h] [-s SK] [-o OPT] [port]
 
@@ -65,7 +72,10 @@ optional arguments:
 ```
 Example:
 ```
-./keys.py --name example -b
+./keys.py --name testk -b
+Enter a bit-length for n (default: 2048): 1024
+Wrote pk to 'testk.public.json'
+Wrote sk to 'testk.private.json'
 ```
 
 ### Database Encryption
@@ -86,45 +96,140 @@ First you must have a database represented in CSV format, for example
 4,5,6,25
 7,8,9,3
 ```
-Assuming this file is named database.csv and you have already generated a public key called `example`,
-you can encrypt the database as `encryptedDB.enc.csv` by running
+Assuming this file is named `database.csv` and you have already generated a public key called `testk`,
+you can encrypt the database as `encrypted.enc.csv` by running
 ```
-./database.py --csv database.csv --key example.public.json --name encryptedDB
+./database.py --csv database.csv --key testk.public.json --name encrypted
 ```
 
 
 ##
 # Functions
-1. [Secure Multiplication](#Secure_Multiplication)
-2. [Secure Minimum](#SMIN)
-3. [Secure Squared Euclidian Distance](#SSED)
-4. [Secure Bit Decomposition](#SBD)
-5. [Secure Bit-OR](#SBOR)
-6. [Secure Minimum-of-n](#SMIN-of-n)
-7. [Secure k-Nearest Neighbors](#SkNN)
+1. [Secure Multiplication](secure-multiplication)
+2. [Secure Minimum](#smin)
+3. [Secure Squared Euclidian Distance](#ssed)
+4. [Secure Bit Decomposition](#sbd)
+5. [Secure Bit-OR](#sbor)
+6. [Secure Minimum-of-n](#smin-of-n)
+7. [Secure k-Nearest Neighbors](#sknn)
 
 ## Secure Multiplication
-* Run `server.py` and `client.py` in two seperate terminals
+Secure Multiplication runs the secure multiplication protocol on two numbers entered by the server and client. 
+* Run `server.py` and `client.py` in two separate terminals
 * Server: Enter u
-* Client: Enver v
+* Client: Enter v
 
 Example:
 ```
 ./server.py
-...
 Secure multiplication selected, please enter u: 2
 ```
 ```
-./client.py -s example.private.json -o 1
+./client.py -s testk.private.json -o 1
 Secure multiplication selected, please enter v: 3
 u * v = 6
+```
+
+## SMIN
+Secure Minimum returns the smaller of the two numbers entered by the server and client. The maximum
+bitlength assumed is 32.
+* Run `server.py` and `client.py` in two separate terminals
+* Server: Enter u
+* Client: Enter v
+
+Example:
+```
+./server.py
+Secure minimum selected, please enter u: 5
+```
+```
+./client.py -s testk.private.json -o 2
+Secure minimum selected, please enter v: 1
+Min(u, v) = 1
+```
+
+## SSED
+SSED calculates the squared euclidian distance between two encrypted vectors.
+* Run `server.py` and `client.py` in two separate terminals
+* Server: Enter comma-delimited vector u
+* Client: Enter comma-delimited vector v
+
+Example:
+```
+./server.py
+Secure squared euclidean distance selected, please enter u: 
+Enter comma delimited vector:
+1,2,3,4,5
+```
+```
+./client.py -s testk.private.json -o 3
+Secure squared euclidean distance selected, please enter v: 
+Enter comma delimited vector: 
+5,4,3,2,1
+SSED(u, v) = 40
+```
+
+## SBD
+Secure Bit Decomposition breaks an encrypted number into its encrypted big-endian binary representation.
+* Run `server.py` and `client.py` in two separate terminals
+* Client:
+  * Enter x (number to decompose)
+  * Enter m (bitlength)
+
+Example:
+```
+./server.py
+Secure bit decomposition selected.
+```
+```
+./client.py -s testk.private.json -o 4
+Secure bit decomposition selected, please enter x: 13
+Enter a bitlength m (or default to len(x)): 8
+Received [x] from server.
+Decrypted; x-decomp: [0, 0, 0, 0, 1, 1, 0, 1]
+```
+
+## SBOR
+Secure Bit-OR performs the OR operation between two encrypted bits.
+* Run `server.py` and `client.py` in two separate terminals
+* Server: Enter `0` or `1`
+* Client: Enter `0` or `1`
+
+Example:
+```
+./server.py
+Secure Bit-OR selected, please enter o1 [0,1]: 0
+```
+```
+./client.py -s testk.private.json -o 5
+Secure Bit-OR selected, please enter o2 [0,1]: 1
+Sent o2 to server
+OR(o1, o2) = 1
+```
+
+## SMIN of n
+
+Secure Minimum-of-n performs SMIN for arbitrarily many values.
+* Run `server.py` and `client.py` in two separate terminals
+* Client: Enter space-separated list of numbers
+
+Example:
+```
+./server.py
+Secure minimum-of-n selected.
+```
+```
+./client.py -s testk.private.json -o 6
+Secure minimum-of-n selected, please enter some numbers: 15 16 42 23 4 8
+Sent [d] to server.
+min(d) = 4
 ```
 
 ## SkNN
 
 ### Requirements
  * Three terminals: **Bob**, **C1**, **C2**
- * The database, a CSV file of integers
+ * The [database](#database-encryption), a CSV file of integers
 
 ### Procedure
  * **C2**:
